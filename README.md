@@ -6,7 +6,7 @@
 
 <div align="center">
 
-# nonebot-plugin-Blocker
+# nonebot-plugin-blocker
 
 _✨ NoneBot Plugin Blocker ✨_
 
@@ -36,11 +36,11 @@ _✨ NoneBot Plugin Blocker ✨_
 <details>
 <summary>pip</summary>
 
-    pip install nonebot-plugin-example
+    pip install nonebot-plugin-blocker
 </details>
 
 打开 nonebot2 项目根目录下的 `pyproject.toml` 文件, 在 `[tool.nonebot]` 部分追加写入
 
-    plugins = ["nonebot_plugin_example"]
+    plugins = ["nonebot-plugin-blocker"]
 
 </details>
