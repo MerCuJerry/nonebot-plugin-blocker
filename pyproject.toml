@@ -1,6 +1,6 @@
 [project]
 name = "nonebot-plugin-blocker"
-version = "0.1.4"
+version = "0.1.3"
 description = "Message Blocker"
 homepage = "https://github.com/MerCuJerry/nonebot-plugin-blocker"
 repository = "https://github.com/MerCuJerry/nonebot-plugin-blocker"
@@ -11,4 +11,4 @@ dependencies = [
 ]
 requires-python = ">=3.8,<4.0"
 readme = "README.md"
-license = "MIT"
+license = { text = "MIT" }
