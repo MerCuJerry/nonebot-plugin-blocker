@@ -7,34 +7,52 @@ if not DATA_PATH.exists():
 
 BLOCKLIST_JSON_PATH = DATA_PATH / "blocklist.json"
 if not BLOCKLIST_JSON_PATH.exists():
-    BLOCKLIST_JSON_PATH.write_text("[0,0]", encoding="u8")
+    BLOCKLIST_JSON_PATH.write_text('[]',encoding='u8')
 
-blocklist : list[int]
+REPLY_JSON_PATH = DATA_PATH / "blocker_reply.json"
+if not REPLY_JSON_PATH.exists():
+    tmp_dict = {}
+    tmp_dict['reply_on']={'type':'text','data':{'text':'在本群开启'}}
+    tmp_dict['reply_off']={'type':'text','data':{'text':'在本群关闭'}}
+    with REPLY_JSON_PATH.open('w', encoding='UTF-8') as file:
+            json.dump(tmp_dict, file, ensure_ascii=False)
 
-def add_blocker(gid: int):
-    try:
-        blocklist.index(gid)
-    except ValueError:
-        blocklist.append(gid)
-    
-def del_blocker(gid: int):
-    blocklist.remove(gid)
-    
-def check_blocker(gid: int) -> bool:
-    try:
-        blocklist.index(gid)
-    except ValueError:
-        return False
-    except:
-        return False
-    else:
-        return True
+class BlockerList:
+    blocker_reply : dict
+    blocklist : list[int]
 
-def save_blocker_list():
-    with BLOCKLIST_JSON_PATH.open('w', encoding='UTF-8') as file:
-        json.dump(blocklist, file, ensure_ascii=False)
+    def __init__(self):
+        with BLOCKLIST_JSON_PATH.open('r', encoding='UTF-8') as file:
+            self.blocklist = json.load(file)
+        with REPLY_JSON_PATH.open('r', encoding='UTF-8') as file:
+            self.blocker_reply = json.load(file)
+            
+    def get_on_reply(self):
+        return self.blocker_reply['reply_on']['type'],self.blocker_reply['reply_on']['data']
     
-def load_blocker_list():
-    global blocklist
-    with BLOCKLIST_JSON_PATH.open('r', encoding='UTF-8') as file:
-        blocklist=json.load(file)
+    def get_off_reply(self):
+        return self.blocker_reply['reply_off']['type'],self.blocker_reply['reply_off']['data']    
+    
+    def add_blocker(self,gid: int):
+        try:
+            self.blocklist.index(gid)
+        except ValueError:
+            self.blocklist.append(gid)
+        
+    def del_blocker(self,gid: int):
+        try:
+            self.blocklist.remove(gid)
+        except ValueError:
+            pass
+        
+    def check_blocker(self,gid: int) -> bool:
+        try:
+            self.blocklist.index(gid)
+        except:
+            return False
+        else:
+            return True
+
+    def __del__(self):
+        with BLOCKLIST_JSON_PATH.open('w', encoding='UTF-8') as file:
+            json.dump(self.blocklist, file, ensure_ascii=False)

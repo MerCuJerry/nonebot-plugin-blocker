@@ -44,3 +44,23 @@ _✨ NoneBot Plugin Blocker ✨_
     plugins = ["nonebot-plugin-blocker"]
 
 </details>
+
+## 配置
+
+在 nonebot2 根目录下面的data目录里找到blocker 编辑里面的blocker_reply
+
+    {
+        "reply_on":{
+            "type":"text"
+            "data":{
+                "text":"在本群开启"
+            }
+        },
+        "reply_off":{
+            "type":"text"
+            "data":{
+                "text":"在本群关闭"
+            }
+        }
+    }
+    
