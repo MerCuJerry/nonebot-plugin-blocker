@@ -21,12 +21,9 @@ _✨ NoneBot Plugin Blocker ✨_
 
 </div>
 
-这是一个 nonebot2 插件项目，用于分群配置机器人的开启关闭
-
 ## 📖 介绍
 
-使用.bot on在该群开启bot
-使用.bot off在该群关闭bot
+这是一个 nonebot2 插件项目，用于分群配置机器人的开启关闭
 
 ## 💿 安装
 <details>
@@ -45,10 +42,10 @@ _✨ NoneBot Plugin Blocker ✨_
 
 </details>
 
-## 配置
+## ⚙️ 配置
 
-在 nonebot2 根目录下面的data目录里找到blocker 编辑里面的blocker_reply
-
+插件的配置文件位于 `data/blocker/blocker_reply.json` 里
+```jsonc
     {
         "reply_on":{
             "type":"text"
@@ -63,4 +60,13 @@ _✨ NoneBot Plugin Blocker ✨_
             }
         }
     }
-    
+```
+`data/blocker/blocklist.json` 里是已经设置关闭Bot的群号，可以在关闭nonebot之后手动编辑
+
+## 💬 指令
+
+指令只有管理员，群主以及Bot的SUPERUSER能够使用
+
+### .bot on在该群开启bot
+
+### .bot off在该群关闭bot
