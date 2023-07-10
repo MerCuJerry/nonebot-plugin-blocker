@@ -8,12 +8,13 @@ else:
 from nonebot.permission import SUPERUSER
 from nonebot import on_regex, logger
 from nonebot.matcher import Matcher
+import re
 from nonebot.message import run_preprocessor
 from .config import BlockerList
 
 blockerlist: BlockerList
 
-blocker = on_regex(r"^.bot (on|off)$",permission= GROUP_ADMIN | GROUP_OWNER | SUPERUSER, priority=2)
+blocker = on_regex(r"^[.。]bot (on|off)$",permission= GROUP_ADMIN | GROUP_OWNER | SUPERUSER, priority=2)
 
 @driver.on_startup
 async def load_blocker_on_start():
@@ -27,7 +28,7 @@ async def save_blocker_on_shut():
 
 @run_preprocessor
 async def blocker_hook(matcher: Matcher,event: GroupMessageEvent):
-    if blockerlist.check_blocker(event.group_id) and event.get_plaintext().find(".bot") == -1:
+    if blockerlist.check_blocker(event.group_id) and re.match('[.。]bot (on|off)',event.get_plaintext()) is None:
         logger.info("[Blocker]Your Message is Blocked By Blocker.")
         await matcher.finish()
         

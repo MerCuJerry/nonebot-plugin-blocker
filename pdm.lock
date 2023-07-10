@@ -121,7 +121,7 @@ dependencies = [
 lock_version = "4.2"
 cross_platform = true
 groups = ["default"]
-content_hash = "sha256:ad1203c3756bff17726ead824dc9a80bea271301af0b9d7a56eb561c6d78a02a"
+content_hash = "sha256:4e2881e3c2f784d5cc7dca71e07ae27476e3db592d680051dbe44f0fd5539a21"
 
 [metadata.files]
 "colorama 0.4.6" = [
