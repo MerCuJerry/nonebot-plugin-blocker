@@ -17,7 +17,4 @@ jobs:
         python-version: 3.11
         cache: true
     - name: Publish distribution to PyPI with PDM
-      run: >-
-        pdm publish
-        -u ${{ secrets.PDM_PUBLISH_USERNAME }}
-        -p ${{ secrets.PDM_PUBLISH_PASSWORD }}
+      run: pdm publish -u "__token__" -P ${{ secrets.PYPI_API_TOKEN }}
