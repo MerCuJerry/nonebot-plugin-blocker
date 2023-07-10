@@ -21,4 +21,3 @@ jobs:
         pdm publish
         -u ${{ secrets.PDM_PUBLISH_USERNAME }}
         -p ${{ secrets.PDM_PUBLISH_PASSWORD }}
-        .
