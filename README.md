@@ -70,3 +70,5 @@ _✨ NoneBot Plugin Blocker ✨_
 ### .bot on在该群开启bot
 
 ### .bot off在该群关闭bot
+
+### 在上述指令后at特定bot将关闭使用了本插件的特定Bot，不会影响使用本插件的其他Bot
