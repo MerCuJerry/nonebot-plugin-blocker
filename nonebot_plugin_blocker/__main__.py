@@ -21,7 +21,7 @@ async def load_blocker_on_start():
     global blockerlist, blocker_trigger
     blockerlist = BlockerList()
     try:
-        blocker_trigger = get_driver().config.blocker_trigger
+        blocker_trigger = driver.config.blocker_trigger
     except AttributeError:
         blocker_trigger = {}
 
@@ -31,34 +31,30 @@ async def save_blocker_on_shut():
     global blockerlist
     del blockerlist
     
-def msg_checker(msg: str,uid: str):
+def msg_checker(msg: str,uid: str) -> bool|None:
     try:
         if re.match(blocker_trigger[uid]['on']+'$', msg) is not None:
-            return True, True
+            return True
         elif re.match(blocker_trigger[uid]['off']+'$', msg) is not None:
-            return True, False
+            return False
     except (KeyError,TypeError):
-        if re.match('[.。]bot (on|off)\s?(|\[at:qq=\d+\])', msg) is not None:
-            if msg.find('on') != -1:
-                return True, True
-            elif msg.find('off') != -1:
-                return True, False
-    return False, False
+        if re.match('[.。]bot on\s?(|\[at:qq=\d+\])', msg) is not None:
+            return True
+        elif re.match('[.。]bot off\s?(|\[at:qq=\d+\])', msg) is not None:
+            return False
+    return None
 
 async def msg_checker_rule(event: GroupMessageEvent, state: T_State) -> bool:
-    if event.get_plaintext().find('qq') != -1 and not event.is_tome():
+    if (event.get_plaintext().find('qq') != -1 and not event.is_tome()) or event.user_id == event.self_id:
         return False
-    if event.user_id == event.self_id:
-        return False
-    state['blocker_passthrough'], state['blocker_state'] = msg_checker(event.get_plaintext(), str(event.self_id))
-    return state['blocker_passthrough']
+    state['blocker_state'] = msg_checker(event.get_plaintext(), str(event.self_id))
+    return True if state['blocker_state'] is not None else False
     
 blocker = on_message(rule=msg_checker_rule, permission=GROUP_ADMIN | GROUP_OWNER | SUPERUSER, priority=2, block=True)
 
 @run_preprocessor
 async def blocker_hook(matcher: Matcher, event: GroupMessageEvent):
-    blocker_pass, tmp = msg_checker(event.get_plaintext(), str(event.self_id))
-    if blockerlist.check_blocker(event.group_id, event.self_id) and not blocker_pass:
+    if blockerlist.check_blocker(event.group_id, event.self_id) and msg_checker(event.get_plaintext(), str(event.self_id)) is None:
         logger.info('[Blocker]Your Message is Blocked By Blocker.')
         await matcher.finish()
         
