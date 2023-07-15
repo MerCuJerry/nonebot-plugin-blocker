@@ -44,7 +44,15 @@ _✨ NoneBot Plugin Blocker ✨_
 
 ## ⚙️ 配置
 
-插件的配置文件位于 `data/blocker/blocker_reply.json` 里
+### 常规配置项，位于.env文件里
+
+```ini
+#本配置项不是必填配置项
+blocker_trigger={"%BotQQ号%":{"on":"%开启命令%","off":"%关闭命令%"}}
+```
+
+### 其他配置项
+插件的回复配置文件位于 `data/blocker/blocker_reply.json` 里
 ```jsonc
     {
         "reply_on":{

@@ -54,7 +54,7 @@ class BlockerList:
     def del_blocker(self,gid: int, qid: int):
         try:
             self.blocklist[str(qid)].remove(gid)
-        except ValueError:
+        except:
             pass
         
     def check_blocker(self,gid: int, qid: int) -> bool:
