@@ -12,7 +12,7 @@ _✨ NoneBot Plugin Blocker ✨_
 
 
 <a href="./LICENSE">
-    <img src="https://img.shields.io/github/license/owner/nonebot-plugin-blocker.svg" alt="license">
+    <img src="https://img.shields.io/github/license/MerCuJerry/nonebot-plugin-blocker.svg" alt="license">
 </a>
 <a href="https://pypi.python.org/pypi/nonebot-plugin-blocker">
     <img src="https://img.shields.io/pypi/v/nonebot-plugin-blocker.svg" alt="pypi">
@@ -72,7 +72,7 @@ BLOCKER_WEBUI_PASSWORD=""
 
 ### 在上述指令后at特定bot将关闭使用了本插件的特定Bot，不会影响使用本插件的其他Bot
 
-### 如果你设置了blocker_trigger项那么指令将会是你设置文本，如果仍然只能使用.bot on|off说明配置写错了请检查
+### 如果你在WebUI设置了指令那么指令将会是你设置的文本
 
 ## TODO && 碎碎念
 

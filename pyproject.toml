@@ -11,7 +11,14 @@ dependencies = [
 ]
 requires-python = ">=3.8,<4.0"
 readme = "README.md"
-license = { text = "MIT" }
+license = {file = "LICENSE"}
 
 [project.urls]
 homepage = "https://github.com/MerCuJerry/nonebot-plugin-blocker"
+
+[tool.pdm.build]
+source-includes = ["nonebot_plugin_blocker/web/webpage/*"]
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
