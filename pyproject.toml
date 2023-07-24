@@ -1,6 +1,6 @@
 [project]
 name = "nonebot-plugin-blocker"
-version = "0.3.0"
+version = "0.3.0.post1"
 description = "Message Blocker"
 authors = [{ name = "MerCuJerry", email = "mercujerry@gmail.com" }]
 keywords = ["nonebot", "nonebot2", "qqbot", "bot"]
@@ -17,7 +17,7 @@ license = {file = "LICENSE"}
 homepage = "https://github.com/MerCuJerry/nonebot-plugin-blocker"
 
 [tool.pdm.build]
-source-includes = ["nonebot_plugin_blocker/web/webpage/*"]
+includes = ["nonebot_plugin_blocker/web/webpage"]
 
 [build-system]
 requires = ["pdm-backend"]
