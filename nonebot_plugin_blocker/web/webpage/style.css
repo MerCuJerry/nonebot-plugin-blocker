@@ -1,0 +1,145 @@
+* {
+    box-sizing: border-box;
+    margin: 0%;
+    padding: 0%;
+    background-color: #f1f1f1;
+    font-family: Helvetica, sans-serif;
+    font-size: 20px;
+}
+
+header {
+    position: fixed;
+    top: 0%;
+    width: 100%;
+    padding: 20px;
+    height: 60px;
+    align-items: center;
+    background-color: #58b7ff;
+    overflow: hidden;
+    color: white;
+}
+
+header span {
+    text-align: center;
+    background-color: inherit;
+    color: inherit;
+}
+
+.content {
+    position: relative;
+}
+
+.row {
+    margin: 0;
+    padding: 0;
+}
+
+.sidebar {
+    width: 20%;
+    height: 100%;
+    border-right: 1px solid grey;
+    background-color: #f1f1f1;
+    position: fixed;
+    left: 0%;
+    top: 60px;
+    overflow: auto;
+}
+
+.mainpage {
+    width: 80%;
+    height: 100%;
+    top: 60px;
+    padding: 20px 30px;
+    position: fixed;
+    right: 0%;
+}
+
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+nav * {
+    list-style-type: none;
+    margin: 0;
+    padding: 20px;
+    display: block;
+    background-color: white;
+}
+
+nav div {
+    text-align: center;
+    background-color: #409eff;
+    color: white;
+}
+
+nav li:hover {
+    cursor: pointer;
+    background-color: #ecf5ff;
+}
+
+nav li:hover:not(.active) {
+    background-color: #ecf5ff;
+    color: black;
+}
+
+.active {
+    background-color: white;
+    color: #409eff;
+}
+
+select {
+    padding: 16px 20px;
+    border: none;
+    margin: 8px 0;
+    border-radius: 4px;
+    background-color: #e3e3e3;
+}
+
+.blocker_submit_form span {
+    display: inline;
+}
+
+input[type=text] {
+    position: relative;
+    width: 100%;
+    border: 3px solid #999;
+    border-radius: 4px;
+    transition: 0.5s;
+    max-inline-size: 100%;
+    -webkit-transition: 0.5s;
+    padding: 12px 20px;
+    margin: 8px 0;
+}
+
+input[type=text]:focus,
+input[type=number]:focus {
+    border: 3px solid #555;
+}
+
+input[type=button] {
+    border-radius: 4px;
+    background-color: #c2c2c2;
+    transition: 0.5s;
+    margin-left: 50%;
+    -webkit-transition: 0.5s;
+    padding: 12px 20px;
+    margin: 8px 0;
+}
+
+input[type=button]:hover {
+    background-color: #b7b7b7;
+    cursor: pointer;
+}
+
+@media screen and (max-width: 660px) {
+    .column {
+      width: 100%;
+      position: relative;
+    }
+    .sidebar {
+        border-right: 0px;
+        border-bottom: 1px solid grey;
+    }
+}

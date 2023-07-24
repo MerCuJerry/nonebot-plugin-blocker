@@ -25,6 +25,8 @@ _✨ NoneBot Plugin Blocker ✨_
 
 这是一个 nonebot2 插件项目，用于分群配置机器人的开启关闭
 
+插件提供了一个简单的WebUI来让你配置Bot的开关指令以及对指令做出的回复。
+
 ## 💿 安装
 <details>
 <summary>使用包管理器安装</summary>
@@ -47,28 +49,15 @@ _✨ NoneBot Plugin Blocker ✨_
 ### 常规配置项，位于.env文件里
 
 ```ini
-#本配置项不是必填配置项
-blocker_trigger={"%BotQQ号%":{"on":"%开启命令%","off":"%关闭命令%"}}
+#WebUI的登录凭证，不设置即不进行验证
+BLOCKER_WEBUI_USERNAME=""
+BLOCKER_WEBUI_PASSWORD=""
 ```
 
 ### 其他配置项
-插件的回复配置文件位于 `data/blocker/blocker_reply.json` 里
-```jsonc
-    {
-        "reply_on":{
-            "type":"text"
-            "data":{
-                "text":"在本群开启"
-            }
-        },
-        "reply_off":{
-            "type":"text"
-            "data":{
-                "text":"在本群关闭"
-            }
-        }
-    }
-```
+
+插件的回复配置文件位于 `data/blocker/blocker_reply.json` 里，不建议手动更改
+
 `data/blocker/blocklist.json` 里是已经设置关闭Bot的群号，可以在关闭nonebot之后手动编辑
 
 ## 💬 指令
@@ -83,6 +72,7 @@ blocker_trigger={"%BotQQ号%":{"on":"%开启命令%","off":"%关闭命令%"}}
 
 ### 如果你设置了blocker_trigger项那么指令将会是你设置文本，如果仍然只能使用.bot on|off说明配置写错了请检查
 
-## TODO
+## TODO && 碎碎念
 
-有机会把这抽象的配置项改改，主要是想去掉那多余的文件，现在我自己都没眼看，绷
+ * 准备接着改改配置项
+ * 我测，这WebUI写的我感觉我像个乡下来写代码的，用的30年前的老教材学的东西在写属于是

@@ -1,4 +1,4 @@
-from nonebot import get_driver
+from nonebot import get_driver, logger, on_message
 driver = get_driver()
 if driver._adapters.get("OneBot V12"):
     from nonebot.adapters.onebot.v12 import GroupMessageEvent, MessageSegment, GROUP_ADMIN, GROUP_OWNER
@@ -6,25 +6,25 @@ else:
     from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment, GROUP_ADMIN, GROUP_OWNER
 
 from nonebot.permission import SUPERUSER
-from nonebot import logger, on_message
 from nonebot.matcher import Matcher
-import re
 from nonebot.typing import T_State
 from nonebot.message import run_preprocessor
-from .config import BlockerList
+
+import re
+from .config import BlockerList, get_reply_config
+from . import web
 
 blockerlist: BlockerList
-blocker_trigger: dict
     
+driver.server_app.mount("/blocker-webui", web.app, name="blocker-webui")
+logger.info("[Blocker]WebUI is now listening on "
+            f"<u><e>http://{driver.config.host}:{driver.config.port}/blocker-webui/</e></u>"
+)
+
 @driver.on_startup
 async def load_blocker_on_start():
-    global blockerlist, blocker_trigger
+    global blockerlist
     blockerlist = BlockerList()
-    try:
-        blocker_trigger = driver.config.blocker_trigger
-    except AttributeError:
-        blocker_trigger = {}
-
 
 @driver.on_shutdown
 async def save_blocker_on_shut():
@@ -33,11 +33,12 @@ async def save_blocker_on_shut():
     
 def msg_checker(msg: str,uid: str) -> bool|None:
     try:
-        if re.match(blocker_trigger[uid]['on']+'$', msg) is not None:
+        reply_config = get_reply_config().get(uid)
+        if re.match(reply_config.get("command_on")+'$', msg) is not None:
             return True
-        elif re.match(blocker_trigger[uid]['off']+'$', msg) is not None:
+        elif re.match(reply_config.get("command_off")+'$', msg) is not None:
             return False
-    except (KeyError,TypeError):
+    except (AttributeError,KeyError,TypeError):
         if re.match('[.。]bot on\s?(|\[at:qq=\d+\])', msg) is not None:
             return True
         elif re.match('[.。]bot off\s?(|\[at:qq=\d+\])', msg) is not None:
@@ -60,16 +61,28 @@ async def blocker_hook(matcher: Matcher, event: GroupMessageEvent):
         
 @blocker.handle()
 async def blocker_msg_handle(matcher: Matcher, event: GroupMessageEvent, state: T_State):
+    reply_config = get_reply_config().get(str(event.self_id))
     if state['blocker_state']:
-        msg_type, msg_data = blockerlist.get_on_reply()
         blockerlist.del_blocker(event.group_id, event.self_id)
         logger.info('[Blocker]Delete Blocker Successful.')
-        if msg_type is None:
+        try:
+            msg_type = reply_config.get("reply_on_type")
+            msg_data = reply_config.get("reply_on_content")
+            if msg_data == "":
+                raise AttributeError
+        except AttributeError:
             await matcher.finish('在本群开启')
     else:
-        msg_type, msg_data = blockerlist.get_off_reply()
         blockerlist.add_blocker(event.group_id, event.self_id)
         logger.info('[Blocker]Add Blocker Successful.')
-        if msg_type is None:
-            await matcher.finish('在本群关闭')
-    await matcher.finish(MessageSegment(type=msg_type, data=msg_data))
+        try:
+            msg_type = reply_config.get("reply_off_type")
+            msg_data = reply_config.get("reply_off_content")
+            if msg_data == "":
+                raise AttributeError
+        except AttributeError:
+            await matcher.finish('在本群开启')
+    if msg_type == "text":
+        await matcher.finish(msg_data)
+    else:
+        await matcher.finish(MessageSegment(type=msg_type, data={"file":msg_data}))

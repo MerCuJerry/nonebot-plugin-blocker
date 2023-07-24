@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <title>Blocker插件配置页面</title>
+    <meta charset="utf-8">
+    <script type="text/javascript" src="http://cdn.bootcss.com/jquery/3.7.0/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="static/style.css">
+    <script type="text/javascript">
+            $(document).ready(function(){
+                $.get("query_reply_list",function(result){
+                    if(result.result=="success"){
+                        $.each(result.data, function(i, uid){
+                            $("nav").append($("<li></li>").addClass("botid").text(String(uid)))
+                        });
+                        $(".botid").click(function(){
+                            $(".active").removeClass("active");
+                            $(this).addClass("active")
+                            $.get("query_reply",{uin:$(this).text()},function(result){
+                                if(result.result=="success"){
+                                    $.each(result.data, function(key, val){
+                                        $("[name="+key+"]").val(val)
+                                    });
+                                }
+                            });
+                        });
+                    }
+                });
+                $(".submit").click(function(){
+                    var data = {}
+                    $(".blocker_submit_form").serializeArray().map(function(val,key){
+                        data[val.name] = val.value;
+                    });
+                    var newdata = {}
+                    if(String($(".active").text()) == ""){
+                        alert("您还没有选择或添加账号");
+                    }else{
+                        newdata[String($(".active").text())] = data
+                        console.log(newdata)
+                        $.ajax({
+                            contentType: "application/json",
+                            data: JSON.stringify(newdata),
+                            url: "submit",
+                            type: "POST",
+                            success: function(result){
+                                if(result.result=="success"){
+                                    alert("修改/增加配置成功")
+                                    if($(".active").hasClass("newadd")){
+                                        $(".active").removeClass("newadd").bind("click",function(){
+                                            $.get("query_reply",{uin:$(this).text()},function(result){
+                                                if(result.result=="success"){
+                                                    $.each(result.data, function(key, val){
+                                                        $("[name="+key+"]").val(val)
+                                                    });
+                                                }
+                                            });
+                                        });
+                                    }
+                                }else{
+                                    alert("修改/增加配置失败")
+                                }
+                            }
+                        });
+                    }
+                });
+                $(".add").click(function(){
+                    $(".active").removeClass("active");
+                    if(!$(this).parent().children("span").hasClass("inputbox")){
+                        $("nav").append($("<span></span>").addClass("inputbox")
+                        .append($("<input>").attr("type","text")
+                        .attr("onkeyup","value=value.replace(/[^\\d]/g,'').replace(/^0{1,}/g,'')")
+                        .addClass("botid_input")));
+                        $(".botid_input").focus();
+                        $(".botid_input").bind("keydown blur",function(key){
+                            if(key.which==13||key.which==0){
+                                if($(this).val()==""){
+                                    alert("请填写需要配置的账号")
+                                    $(this).blur().end()
+                                }else{
+                                    var mark=false
+                                    var input_text=$(".botid_input").val()
+                                    $(".botid").each(function(){
+                                        if($(this).text()==input_text){
+                                            mark=true
+                                        }
+                                    });
+                                    if(mark){
+                                        alert("已经存在相同的账号")
+                                        $(this).blur().end()
+                                    }else{
+                                        $("nav").append($("<li></li>").addClass("botid").addClass("newadd").addClass("active").text(input_text));
+                                        $(this).parent().remove();
+                                        $(".newadd").click(function(){
+                                            $(".active").removeClass("active");
+                                            $(this).addClass("active");
+                                        });
+                                    }
+                                }
+                            }
+                        });
+                    }else{
+                        $(".botid_input").focus();
+                    }
+                });
+                $(".delete").click(function(){
+                    if($(".active").text() == ""){
+                        alert("您还没有选择或添加账号");
+                    }else{
+                        if(confirm("您确定要删除该配置吗")){
+                            if($(".active").hasClass("newadd")){
+                                alert("删除配置成功")
+                                $(".active").remove();
+                                $(":text").val("")
+                                $("select").val("text")
+                            }else{
+                                $.get("delete",{uin:$(".active").text()},function(result){
+                                    if(result.result=="success"){
+                                        alert("删除配置成功")
+                                        $(".active").remove();
+                                        $(":text").val("")
+                                        $("select").val("text")
+                                    }else{
+                                        alert("删除配置失败")
+                                    }
+                                });
+                            }
+                        }
+                    }
+                });
+              });
+    </script>
+    <body>
+        <header>
+            <span>Blocker-WebUI</span>
+        </header>
+        <div class="sidebar column">
+            <div class="row">
+                <nav>
+                    <div>账号选择</div>
+                    <li class="add">添加账号</li>
+                </nav>
+            </div>
+        </div>
+        <div class="mainpage column" >
+            <div class="row">
+                <form action="#" method="post" name="blocker_submit_form" class="blocker_submit_form">
+                    <div class="command_on input_box">
+                        <span>开启命令：</span>
+                        <input type="text" name="command_on">
+                    </div>
+                    <div class="command_off input_box">
+                        <span>关闭命令：</span>
+                        <input type="text" name="command_off">
+                    </div>
+                    <div class="reply_on">
+                        <div class="reply_type">
+                            <span>开启回复类型：</span>
+                            <select class="reply_type_select" name="reply_on_type">
+                                <option value="text" selected>文本</option>
+                                <option value="image">图片</option>
+                                <option value="record">音频</option>
+                            </select>
+                        </div>
+                        <div class="input_box">
+                            <span>开启回复：</span>
+                            <input type="text" name="reply_on_content">
+                        </div>
+                    </div>
+                    <div class="reply_off">
+                        <div class="reply_type">
+                            <span>关闭回复类型：</span>
+                            <select class="reply_type_select" name="reply_off_type" >
+                                <option value="text" selected>文本</option>
+                                <option value="image">图片</option>
+                                <option value="record">音频</option>
+                            </select>
+                        </div>
+                        <div class="input_box">
+                            <span>关闭回复：</span>
+                            <input type="text" name="reply_off_content">
+                        </div>
+                    </div>
+                    <input type="button" value="确认" class="submit">
+                    <input type="button" value="删除该配置" class="delete">
+                </form>
+            </div>
+        </div>
+    </body>
+</html>
