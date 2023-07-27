@@ -69,14 +69,12 @@ class BlockerList:
     def check_blocker(self,gid: int, qid: int) -> bool:
         try:
             self.blocklist[str(qid)].index(gid)
+            return True
         except:
             return False
-        else:
-            return True
 
     def __del__(self):
-        with BLOCKLIST_JSON_PATH.open('w', encoding='UTF-8') as file:
-            json.dump(self.blocklist, file, ensure_ascii=False)
+        json.dump(self.blocklist, BLOCKLIST_JSON_PATH.open('w', encoding='UTF-8'), ensure_ascii=False)
             
 driver_config = get_driver().config
 config = PluginConfig.parse_obj(driver_config.dict())
