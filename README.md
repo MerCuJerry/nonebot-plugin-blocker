@@ -18,7 +18,9 @@ _✨ NoneBot Plugin Blocker ✨_
     <img src="https://img.shields.io/pypi/v/nonebot-plugin-blocker.svg" alt="pypi">
 </a>
 <img src="https://img.shields.io/badge/python-3.8+-blue.svg" alt="python">
-
+<a href="https://pypi.python.org/pypi/nonebot-plugin-autoreply" rel="nofollow">
+    <img alt="pypi download" src="https://img.shields.io/pypi/dm/nonebot-plugin-blocker" style="max-width: 100%;">
+</a>
 </div>
 
 ## 📖 介绍
