@@ -19,7 +19,7 @@
         </div>
         <div class="mainpage column" >
             <div class="row">
-                <form action="#" method="post" name="blocker_submit_form" class="blocker_submit_form">
+                <form class="command">
                     <div class="command_on input_box">
                         <span>开启命令：</span>
                         <input type="text" name="command_on">
@@ -28,37 +28,36 @@
                         <span>关闭命令：</span>
                         <input type="text" name="command_off">
                     </div>
-                    <div class="reply_on">
-                        <div class="reply_type">
-                            <span>开启回复类型：</span>
-                            <select class="reply_type_select" name="reply_on_type">
-                                <option value="text" selected>文本</option>
-                                <option value="image">图片</option>
-                                <option value="record">音频</option>
-                            </select>
-                        </div>
-                        <div class="input_box">
-                            <span>开启回复：</span>
-                            <input type="text" name="reply_on_content">
-                        </div>
-                    </div>
-                    <div class="reply_off">
-                        <div class="reply_type">
-                            <span>关闭回复类型：</span>
-                            <select class="reply_type_select" name="reply_off_type" >
-                                <option value="text" selected>文本</option>
-                                <option value="image">图片</option>
-                                <option value="record">音频</option>
-                            </select>
-                        </div>
-                        <div class="input_box">
-                            <span>关闭回复：</span>
-                            <input type="text" name="reply_off_content">
-                        </div>
-                    </div>
-                    <input type="button" value="确认" class="submit">
-                    <input type="button" value="删除该配置" class="delete">
                 </form>
+                <form name="reply_on" class="reply_on">
+                    <div class="reply_type">
+                        <span>开启回复类型：</span>
+                        <select class="reply_type_select" name="type">
+                            <option value="text" selected>文本</option>
+                            <option value="image">图片</option>
+                            <option value="record">音频</option>
+                        </select>
+                    </div>
+                    <div class="input_box">
+                        <span>开启回复：</span>
+                        <input type="text" name="data">
+                    </div>
+                </form>
+                <form name="reply_off" class="reply_off">
+                    <div class="reply_type">
+                        <span>关闭回复类型：</span>
+                        <select class="reply_type_select" name="type" >
+                            <option value="text" selected>文本</option>
+                            <option value="image">图片</option>
+                            <option value="record">音频</option>
+                        </select>
+                    <div class="input_box">
+                        <span>关闭回复：</span>
+                        <input type="text" name="data">
+                    </div>
+                </form>
+                <input type="button" value="确认" class="submit">
+                <input type="button" value="删除该配置" class="delete">
             </div>
         </div>
     </body>

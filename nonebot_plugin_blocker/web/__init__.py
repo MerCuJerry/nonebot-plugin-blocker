@@ -1,12 +1,12 @@
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.security import HTTPBasicCredentials, HTTPBasic
-from secrets import compare_digest
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
+from secrets import compare_digest
 from ..config import(
     STATIC_FILE_PATH,
     MAIN_PAGE_PATH,
-    ReplyConfigModel,
+    ConfigModel,
     get_reply_config,
     save_reply_config,
     config
@@ -36,18 +36,18 @@ app = FastAPI(
     version=("nonebot-plugin-blocker")
 )
 
-app.mount("/static", StaticFiles(directory=STATIC_FILE_PATH, html=True), name="frontend")
+app.mount("/static", StaticFiles(directory=STATIC_FILE_PATH, html=False), name="frontend")
 
 @app.get("/",response_class=HTMLResponse)
 async def show_webpage():
     return HTMLResponse(content=MAIN_PAGE_PATH.read_text(encoding="UTF-8"), status_code=200)
 
 @app.post("/submit")
-async def __set_config__(form: ReplyConfigModel):
+async def __set_config__(form: ConfigModel):
+    save_dict = get_reply_config()
+    save_dict.update(form.dict().get("__root__"))
+    save_reply_config(ConfigModel.parse_obj(save_dict))
     try:
-        config_list = get_reply_config()
-        config_list.update(form.dict().get("__root__"))
-        save_reply_config(config_list)
         return {"result":"success"}
     except:
         return {"result":"failed"}
@@ -69,9 +69,9 @@ async def __get_reply_config__(uin: str):
 @app.get("/delete")
 async def __delete_reply_config__(uin: str):
     try:
-        config_list = get_reply_config()
-        config_list.pop(uin)
-        save_reply_config(config_list)
+        save_dict = get_reply_config()
+        save_dict.pop(uin)
+        save_reply_config(ConfigModel.parse_obj(save_dict))
         return {"result":"success"}
     except:
         return {"result":"failed"}

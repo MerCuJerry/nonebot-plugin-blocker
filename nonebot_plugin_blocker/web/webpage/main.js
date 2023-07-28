@@ -10,6 +10,11 @@ $(document).ready(function(){
                 $.get("query_reply",{uin:$(this).text()},function(result){
                     if(result.result=="success"){
                         $.each(result.data, function(key, val){
+                            if(typeof(val)=="object"){
+                                $.each(val, function(val_key,val_val){
+                                    $("[name="+key+"]").find("[name="+val_key+"]").val(val_val)
+                                });
+                            }
                             $("[name="+key+"]").val(val)
                         });
                     }
@@ -18,19 +23,29 @@ $(document).ready(function(){
         }
     });
     $(".submit").click(function(){
-        var data = {}
-        $(".blocker_submit_form").serializeArray().map(function(val,key){
-            data[val.name] = val.value;
+        var raw_data = {}
+        var reply_on = {}
+        var reply_off = {}
+        $(".command").serializeArray().map(function(val,key){
+            raw_data[val.name] = val.value;
         });
-        var newdata = {}
+        $(".reply_on").serializeArray().map(function(val,key){
+            reply_on[val.name] = val.value;
+        });
+        $(".reply_off").serializeArray().map(function(val,key){
+            reply_off[val.name] = val.value;
+        });
+        raw_data["reply_on"] = reply_on
+        raw_data["reply_off"] = reply_off
+        var data = {}
         if(String($(".active").text()) == ""){
             alert("您还没有选择或添加账号");
         }else{
-            newdata[String($(".active").text())] = data
-            console.log(newdata)
+            data[String($(".active").text())] = raw_data
+            console.log(data)
             $.ajax({
                 contentType: "application/json",
-                data: JSON.stringify(newdata),
+                data: JSON.stringify(data),
                 url: "submit",
                 type: "POST",
                 success: function(result){
@@ -40,6 +55,11 @@ $(document).ready(function(){
                             $(".active").removeClass("newadd").bind("click",function(){
                                 $.get("query_reply",{uin:$(this).text()},function(result){
                                     if(result.result=="success"){
+                                        if(typeof(val)=="object"){
+                                            $.each(val, function(val_key,val_val){
+                                                $("[name="+key+"]").find("[name="+val_key+"]").val(val_val)
+                                            });
+                                        }
                                         $.each(result.data, function(key, val){
                                             $("[name="+key+"]").val(val)
                                         });
