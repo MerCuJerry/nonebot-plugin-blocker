@@ -7,6 +7,7 @@ from ..config import(
     STATIC_FILE_PATH,
     MAIN_PAGE_PATH,
     ConfigModel,
+    ConfigSingleModel,
     get_reply_config,
     save_reply_config,
     config
@@ -42,11 +43,14 @@ app.mount("/static", StaticFiles(directory=STATIC_FILE_PATH, html=False), name="
 async def show_webpage():
     return HTMLResponse(content=MAIN_PAGE_PATH.read_text(encoding="u8"), status_code=200)
 
-@app.post("/submit")
-async def __set_config__(form: ConfigModel):
+@app.post("/submit/{uin}")
+async def __set_config__(uin: str, form: ConfigSingleModel):
     try:
         config = get_reply_config()
-        config.update(form.dict().get("__root__"))
+        this_config = {uin : form.dict()}
+        config.update(this_config)
+        from ..__main__ import blockerlist
+        blockerlist.change_blocker_type(uin, form.dict().get("blocker_list", False))
         save_reply_config(ConfigModel.parse_obj(config))
         return {"result":"success"}
     except:
@@ -73,6 +77,8 @@ async def __delete_reply_config__(uin: str):
     try:
         config = get_reply_config()
         config.pop(uin)
+        from ..__main__ import blockerlist
+        blockerlist.change_blocker_type(uin)
         save_reply_config(ConfigModel.parse_obj(config))
         return {"result":"success"}
     except:

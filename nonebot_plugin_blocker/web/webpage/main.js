@@ -15,7 +15,7 @@ $(document).ready(function(){
                                     $("[name="+key+"]").find("[name="+val_key+"]").val(val_val)
                                 });
                             }
-                            $("[name="+key+"]").val(val)
+                            $("[name="+key+"]").val(String(val))
                         });
                     }
                 });
@@ -23,11 +23,11 @@ $(document).ready(function(){
         }
     });
     $(".submit").click(function(){
-        var raw_data = {}
+        var data = {}
         var reply_on = {}
         var reply_off = {}
         $(".command").serializeArray().map(function(val,key){
-            raw_data[val.name] = val.value;
+            data[val.name] = val.value;
         });
         $(".reply_on").serializeArray().map(function(val,key){
             reply_on[val.name] = val.value;
@@ -35,18 +35,16 @@ $(document).ready(function(){
         $(".reply_off").serializeArray().map(function(val,key){
             reply_off[val.name] = val.value;
         });
-        raw_data["reply_on"] = reply_on
-        raw_data["reply_off"] = reply_off
-        var data = {}
+        data["blocker_type"] = $(".blocker_type_select").val()
+        data["reply_on"] = reply_on
+        data["reply_off"] = reply_off
         if(String($(".active").text()) == ""){
             alert("您还没有选择或添加账号");
         }else{
-            data[String($(".active").text())] = raw_data
-            console.log(data)
             $.ajax({
                 contentType: "application/json",
                 data: JSON.stringify(data),
-                url: "submit",
+                url: "submit/"+$(".active").text(),
                 type: "POST",
                 success: function(result){
                     if(result.result=="success"){
@@ -61,7 +59,7 @@ $(document).ready(function(){
                                             });
                                         }
                                         $.each(result.data, function(key, val){
-                                            $("[name="+key+"]").val(val)
+                                            $("[name="+key+"]").val(String(val))
                                         });
                                     }
                                 });
@@ -122,14 +120,16 @@ $(document).ready(function(){
                     alert("删除配置成功")
                     $(".active").remove();
                     $(":text").val("")
-                    $("select").val("text")
+                    $(".reply_type_select").val("text")
+                    $(".is_whitelist_select").val("black")
                 }else{
                     $.get("delete",{uin:$(".active").text()},function(result){
                         if(result.result=="success"){
                             alert("删除配置成功")
                             $(".active").remove();
                             $(":text").val("")
-                            $("select").val("text")
+                            $(".reply_type_select").val("text")
+                            $(".is_whitelist_select").val("black")
                         }else{
                             alert("删除配置失败")
                         }
