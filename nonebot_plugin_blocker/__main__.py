@@ -36,11 +36,11 @@ async def msg_checker_rule(event: GroupMessageEvent, state: T_State) -> bool:
         return False # 如果是骰子自己发的或者当发现at了任何人但不是骰子的时候不执行
     try:
         reply_config: dict = get_reply_config().get(str(event.self_id))
-        state["this_reply"] = reply_config.get(state["blocker_state"])
         if re.match(reply_config.get("command_on")+"$", event.get_plaintext()):
             state["blocker_state"] = "reply_on"
         elif re.match(reply_config.get("command_off")+"$", event.get_plaintext()):
             state["blocker_state"] = "reply_off"
+        state["this_reply"] = reply_config.get(state["blocker_state"])
     except (AttributeError,KeyError,TypeError):
         if match := re.match("[.。]bot (on|off)\s?(|\[at:qq=\d+\])", event.get_plaintext()):
             state["blocker_state"] = "reply_"+match.group(1)

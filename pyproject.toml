@@ -1,6 +1,6 @@
 [project]
 name = "nonebot-plugin-blocker"
-version = "0.3.5"
+version = "0.3.6"
 description = "Message Blocker"
 authors = [{ name = "MerCuJerry", email = "mercujerry@gmail.com" }]
 keywords = ["nonebot", "nonebot2", "qqbot", "bot"]
