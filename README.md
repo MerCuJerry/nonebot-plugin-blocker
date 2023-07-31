@@ -63,7 +63,7 @@ BLOCKER_WEBUI_PASSWORD=""
 
 插件的回复配置文件位于 `data/blocker/config.json` 里，不建议手动更改
 
-`data/blocker/blocklist.json` 里是已经设置关闭Bot的群号，可以在关闭nonebot之后手动编辑
+`data/blocker/blocklist.json` 里是已经加入名单的群号，可以在关闭nonebot之后手动编辑
 
 ## 💬 指令
 
@@ -78,7 +78,7 @@ BLOCKER_WEBUI_PASSWORD=""
 ### 如果你在WebUI设置了指令|回复那么指令|回复将会是你设置的文本
 
 ## TODO && 碎碎念
- * 准备在WebUI里添加关闭的群修改
+ * 准备在WebUI里添加加入名单的群修改
  * 非常感谢各位写过nonebot2插件的前辈（
  * 准备接着改改配置项（现在就这样吧，如果nonebot有更新Pydantic的打算的话再进一步做）
  * 什么时候用上PydanticV2啊我要用RootModel啊（
