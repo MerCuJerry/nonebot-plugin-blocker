@@ -32,10 +32,11 @@ async def save_blocker_on_shut():
     del blockerlist
     
 async def msg_checker_rule(event: GroupMessageEvent, state: T_State) -> bool:
-    if (re.search("\[at:qq=\d+\]", event.get_plaintext()) and not event.is_tome()) or event.user_id == event.self_id:
+    if (re.search("[at:qq=\d+]", event.get_plaintext()) and not event.is_tome()) or event.user_id == event.self_id:
         return False # 如果是骰子自己发的或者当发现at了任何人但不是骰子的时候不执行
     try:
         reply_config: dict = get_reply_config().get(str(event.self_id))
+        state["this_reply"] = reply_config.get(state["blocker_state"])
         if re.match(reply_config.get("command_on")+"$", event.get_plaintext()):
             state["blocker_state"] = "reply_on"
         elif re.match(reply_config.get("command_off")+"$", event.get_plaintext()):
@@ -43,14 +44,8 @@ async def msg_checker_rule(event: GroupMessageEvent, state: T_State) -> bool:
     except (AttributeError,KeyError,TypeError):
         if match := re.match("[.。]bot (on|off)\s?(|\[at:qq=\d+\])", event.get_plaintext()):
             state["blocker_state"] = "reply_"+match.group(1)
-    if "blocker_state" in state:
-        try:
-            state["this_reply"] = reply_config.get(state["blocker_state"])
-        except AttributeError:
             state["this_reply"] = reply_config_raw.get(state["blocker_state"])
-        return True
-    else:
-        return False
+    return True if "blocker_state" in state else False
     
 blocker = on_message(rule=msg_checker_rule, permission=GROUP_ADMIN | GROUP_OWNER | SUPERUSER, priority=1, block=True)
 
