@@ -40,14 +40,14 @@ app.mount("/static", StaticFiles(directory=STATIC_FILE_PATH, html=False), name="
 
 @app.get("/",response_class=HTMLResponse)
 async def show_webpage():
-    return HTMLResponse(content=MAIN_PAGE_PATH.read_text(encoding="UTF-8"), status_code=200)
+    return HTMLResponse(content=MAIN_PAGE_PATH.read_text(encoding="u8"), status_code=200)
 
 @app.post("/submit")
 async def __set_config__(form: ConfigModel):
-    save_dict = get_reply_config()
-    save_dict.update(form.dict().get("__root__"))
-    save_reply_config(ConfigModel.parse_obj(save_dict))
     try:
+        config = get_reply_config()
+        config.update(form.dict().get("__root__"))
+        save_reply_config(ConfigModel.parse_obj(config))
         return {"result":"success"}
     except:
         return {"result":"failed"}
@@ -55,23 +55,25 @@ async def __set_config__(form: ConfigModel):
 @app.get("/query_reply_list")
 async def __get_reply_list__():
     try:
-        return {"result":"success","data":list(get_reply_config().keys())}
+        config = get_reply_config()
+        return {"result":"success","data":list(config.keys())}
     except:
         return {"result":"failed"}
     
 @app.get("/query_reply")
 async def __get_reply_config__(uin: str):
     try:
-        return {"result":"success","data":get_reply_config().get(uin,"none")}
+        config = get_reply_config()
+        return {"result":"success","data":config.get(uin,"none")}
     except:
         return {"result":"failed"}
     
 @app.get("/delete")
 async def __delete_reply_config__(uin: str):
     try:
-        save_dict = get_reply_config()
-        save_dict.pop(uin)
-        save_reply_config(ConfigModel.parse_obj(save_dict))
+        config = get_reply_config()
+        config.pop(uin)
+        save_reply_config(ConfigModel.parse_obj(config))
         return {"result":"success"}
     except:
         return {"result":"failed"}

@@ -48,7 +48,8 @@ _✨ NoneBot Plugin Blocker ✨_
 
 ## ⚙️ 配置
 
-### 请注意，使用<0.3.1版本的更新之后请重新在WebUI里进行配置
+## 请注意，使用<0.3.1版本的更新之后请重新在WebUI里进行配置
+## >0.3.1,<0.3.3的请更新到0.3.3来自动更新配置项或者更新之后手动重新在WebUI里配置
 
 ### 常规配置项，位于.env文件里
 
@@ -60,7 +61,7 @@ BLOCKER_WEBUI_PASSWORD=""
 
 ### 其他配置项
 
-插件的回复配置文件位于 `data/blocker/reply_config.json` 里，不建议手动更改
+插件的回复配置文件位于 `data/blocker/config.json` 里，不建议手动更改
 
 `data/blocker/blocklist.json` 里是已经设置关闭Bot的群号，可以在关闭nonebot之后手动编辑
 
