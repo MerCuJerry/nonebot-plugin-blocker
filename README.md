@@ -42,14 +42,14 @@ _✨ NoneBot Plugin Blocker ✨_
 
 打开 nonebot2 项目根目录下的 `pyproject.toml` 文件, 在 `[tool.nonebot]` 部分追加写入
 
-    plugins = ["nonebot-plugin-blocker"]
+    plugins = ["nonebot_plugin_blocker"]
 
 </details>
 
 ## ⚙️ 配置
 
-## 请注意，使用<0.3.1版本的更新之后请重新在WebUI里进行配置
-## >0.3.1,<0.3.3的请更新到0.3.3来自动更新配置项或者更新之后手动重新在WebUI里配置
+### 请注意，使用<0.3.1版本的更新之后请重新在WebUI里进行配置
+### >0.3.1,<0.3.3的请更新到0.3.3来自动更新配置项或者更新之后手动重新在WebUI里配置
 
 ### 常规配置项，位于.env文件里
 
