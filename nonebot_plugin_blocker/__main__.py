@@ -16,7 +16,7 @@ from .config import BlockerList, get_reply_config, reply_config_raw
 from . import web
 
 blockerlist: BlockerList
-    
+
 driver.server_app.mount("/blocker-webui", web.app, name="blocker-webui")
 
 @driver.on_startup
@@ -35,13 +35,13 @@ async def msg_checker_rule(event: GroupMessageEvent, state: T_State) -> bool:
     if (re.search("[at:qq=\d+]", event.get_plaintext()) and not event.is_tome()) or event.user_id == event.self_id:
         return False # 如果是骰子自己发的或者当发现at了任何人但不是骰子的时候不执行
     try:
-        reply_config: dict = get_reply_config().get(str(event.self_id))
+        reply_config = get_reply_config().get(str(event.self_id))
         for arg in ["on","off"]:
             if re.match(reply_config.get("command_"+arg)+"$", event.get_plaintext()):
                 state["blocker_state"] = "reply_"+arg
                 state["this_reply"] = reply_config.get(state["blocker_state"])
     except (AttributeError,KeyError,TypeError):
-        if match := re.match("[.。]bot (on|off)\s?(|\[at:qq=\d+\])", event.get_plaintext()):
+        if match := re.match("[.。]bot (on|off)\s?(|[at:qq=\d+])", event.get_plaintext()):
             state["blocker_state"] = "reply_"+match.group(1)
             state["this_reply"] = reply_config_raw.get(state["blocker_state"])
     state["blocker_type"] = blockerlist.blocker_type.get(str(event.self_id), False)
@@ -51,7 +51,7 @@ blocker = on_message(rule=msg_checker_rule, permission=GROUP_ADMIN | GROUP_OWNER
 
 @run_preprocessor
 async def blocker_hook(matcher: Matcher, event: GroupMessageEvent):
-    if blockerlist.check_blocker(event.group_id, str(event.self_id), matcher.plugin_name):
+    if blockerlist(event.group_id, str(event.self_id), matcher.plugin_name):
         logger.info("[Blocker]Your Message is Blocked By Blocker.")
         raise IgnoredException("[Blocker]Matcher Blocked By Blocker")
         
@@ -64,6 +64,7 @@ async def blocker_msg_handle(matcher: Matcher, event: GroupMessageEvent, state: 
         blockerlist.del_blocker(event.group_id, str(event.self_id))
     else:
         blockerlist.add_blocker(event.group_id, str(event.self_id))
+    await blockerlist.save_blocker()
     if msg_type == "text":
         await matcher.finish(msg_data)
     else:
