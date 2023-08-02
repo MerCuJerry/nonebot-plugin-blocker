@@ -85,7 +85,7 @@ class BlockerList:
         try:
             self.blocklist.get(uin).remove(gid)
             logger.info("[Blocker]Delete Blocker Successful.")
-        except (AttributeError,ValueError):
+        except (AttributeError,KeyError):
             logger.info("[Blocker]Delete Blocker Failed.")
     
     def change_blocker_type(self,uin: str, val: bool = False):
