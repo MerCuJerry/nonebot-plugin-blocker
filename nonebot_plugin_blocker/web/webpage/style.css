@@ -135,9 +135,10 @@ input[type=button]:hover {
 
 @media screen and (max-width: 660px) {
     .column {
-      width: 100%;
-      position: relative;
+        width: 100%;
+        position: relative;
     }
+
     .sidebar {
         border-right: 0px;
         border-bottom: 1px solid grey;

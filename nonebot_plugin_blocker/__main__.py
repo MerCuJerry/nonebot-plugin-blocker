@@ -1,11 +1,10 @@
 from nonebot import get_driver, logger, on_message
 from nonebot.drivers import ReverseDriver
-driver = get_driver()
 from nonebot.adapters.onebot.v11 import (
     GroupMessageEvent,
     MessageSegment,
     GROUP_ADMIN,
-    GROUP_OWNER
+    GROUP_OWNER,
 )
 from nonebot.permission import SUPERUSER
 from nonebot.matcher import Matcher
@@ -14,11 +13,13 @@ from nonebot.message import run_preprocessor
 from nonebot.exception import IgnoredException
 from fastapi import FastAPI
 from re import match, search
-
 from .config import BlockerList, get_reply_config, reply_config_raw
 from . import web
 
+driver = get_driver()
+
 blockerlist: BlockerList
+
 
 @driver.on_startup
 async def load_blocker_on_start():
@@ -26,42 +27,58 @@ async def load_blocker_on_start():
     blockerlist = BlockerList()
     if isinstance(driver, ReverseDriver) and isinstance(driver.server_app, FastAPI):
         driver.server_app.mount("/blocker-webui", web.app, name="blocker-webui")
-        logger.info("[Blocker]WebUI is now listening on "
-                    f"http://{driver.config.host}:{driver.config.port}/blocker-webui/")
+        logger.info(
+            "[Blocker]WebUI is now listening on "
+            f"http://{driver.config.host}:{driver.config.port}/blocker-webui/"
+        )
     else:
         logger.info("[Blocker]WebUI only support FastAPI reverse driver.")
+
 
 @driver.on_shutdown
 async def save_blocker_on_shut():
     global blockerlist
     del blockerlist
 
+
 async def msg_checker_rule(event: GroupMessageEvent, state: T_State) -> bool:
-    if (search("[at:qq=\d+]", event.get_plaintext()) and not event.is_tome()) or event.user_id == event.self_id:
-        return False # 如果是骰子自己发的或者当发现at了任何人但不是骰子的时候不执行
+    if (
+        search("[at:qq=\d+]", event.get_plaintext()) and not event.is_tome()
+    ) or event.user_id == event.self_id:
+        return False  # 如果是骰子自己发的或者当发现at了任何人但不是骰子的时候不执行
     try:
         reply_config = get_reply_config().get(str(event.self_id))
-        for arg in ["on","off"]:
-            if match(reply_config.get("command_"+arg)+"$", event.get_plaintext()):
-                state["blocker_state"] = "reply_"+arg
+        for arg in ["on", "off"]:
+            if match(reply_config.get("command_" + arg) + "$", event.get_plaintext()):
+                state["blocker_state"] = "reply_" + arg
                 state["this_reply"] = reply_config.get(state["blocker_state"])
-    except (AttributeError,KeyError,TypeError):
+    except (AttributeError, KeyError, TypeError):
         if _match := match("[.。]bot (on|off)\s?(|[at:qq=\d+])", event.get_plaintext()):
-            state["blocker_state"] = "reply_"+_match.group(1)
+            state["blocker_state"] = "reply_" + _match.group(1)
             state["this_reply"] = reply_config_raw.get(state["blocker_state"])
     state["blocker_type"] = blockerlist.blocker_type.get(str(event.self_id), False)
-    return True if "blocker_state" in state else False  
-    
-blocker = on_message(rule=msg_checker_rule, permission=GROUP_ADMIN | GROUP_OWNER | SUPERUSER, priority=1, block=True)
+    return True if "blocker_state" in state else False
+
+
+blocker = on_message(
+    rule=msg_checker_rule,
+    permission=GROUP_ADMIN | GROUP_OWNER | SUPERUSER,
+    priority=1,
+    block=True,
+)
+
 
 @run_preprocessor
 async def blocker_hook(matcher: Matcher, event: GroupMessageEvent):
     if blockerlist(event.group_id, str(event.self_id), matcher.plugin_name):
         logger.info("[Blocker]Your Message is Blocked By Blocker.")
         raise IgnoredException("[Blocker]Matcher Blocked By Blocker")
-        
+
+
 @blocker.handle()
-async def blocker_msg_handle(matcher: Matcher, event: GroupMessageEvent, state: T_State):
+async def blocker_msg_handle(
+    matcher: Matcher, event: GroupMessageEvent, state: T_State
+):
     assert state["this_reply"] and state["blocker_state"]
     msg_type = state["this_reply"].get("type")
     msg_data = state["this_reply"].get("data")
@@ -73,4 +90,4 @@ async def blocker_msg_handle(matcher: Matcher, event: GroupMessageEvent, state: 
     if msg_type == "text":
         await matcher.finish(msg_data)
     else:
-        await matcher.finish(MessageSegment(type=msg_type, data={"file":msg_data}))
+        await matcher.finish(MessageSegment(type=msg_type, data={"file": msg_data}))
