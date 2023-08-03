@@ -11,9 +11,9 @@ from nonebot.matcher import Matcher
 from nonebot.typing import T_State
 from nonebot.message import run_preprocessor
 from nonebot.exception import IgnoredException
-from fastapi import FastAPI
-from re import match, search
+import re
 from .config import BlockerList, get_reply_config, reply_config_raw
+from fastapi import FastAPI
 from . import web
 
 driver = get_driver()
@@ -43,21 +43,29 @@ async def save_blocker_on_shut():
 
 async def msg_checker_rule(event: GroupMessageEvent, state: T_State) -> bool:
     if (
-        search("[at:qq=\d+]", event.get_plaintext()) and not event.is_tome()
+        ("at" in event.get_message()) and (not event.is_tome())
     ) or event.user_id == event.self_id:
         return False  # 如果是骰子自己发的或者当发现at了任何人但不是骰子的时候不执行
     try:
-        reply_config = get_reply_config().get(str(event.self_id))
+        config = get_reply_config()
+        reply_config = config[str(event.self_id)]
         for arg in ["on", "off"]:
-            if match(reply_config.get("command_" + arg) + "$", event.get_plaintext()):
+            if reply_config["command_" + arg] == "":
+                raise KeyError
+            if re.match(reply_config["command_" + arg] + "$", event.get_plaintext()):
                 state["blocker_state"] = "reply_" + arg
-                state["this_reply"] = reply_config.get(state["blocker_state"])
-    except (AttributeError, KeyError, TypeError):
-        if _match := match("[.。]bot (on|off)\s?(|[at:qq=\d+])", event.get_plaintext()):
-            state["blocker_state"] = "reply_" + _match.group(1)
-            state["this_reply"] = reply_config_raw.get(state["blocker_state"])
-    state["blocker_type"] = blockerlist.blocker_type.get(str(event.self_id), False)
-    return True if "blocker_state" in state else False
+    except KeyError:
+        if match := re.match("[.。]bot (on|off)(\s+)?(\[at:qq=\d+\])?", event.get_plaintext()):
+            state["blocker_state"] = "reply_" + match.group(1)
+    if "blocker_state" in state:
+        try:
+            state["this_reply"] = reply_config[state["blocker_state"]]
+        except (UnboundLocalError, KeyError):
+            state["this_reply"] = reply_config_raw[state["blocker_state"]]
+        state["blocker_type"] = blockerlist.blocker_type.get(str(event.self_id), False)
+        return True
+    else:
+        return False
 
 
 blocker = on_message(
