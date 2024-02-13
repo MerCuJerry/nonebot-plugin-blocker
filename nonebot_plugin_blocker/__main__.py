@@ -47,7 +47,7 @@ async def msg_checker_rule(event: GroupMessageEvent, state: T_State) -> bool:
     ) or event.user_id == event.self_id:
         return False  # 如果是骰子自己发的或者当发现at了任何人但不是骰子的时候不执行
     try:
-        reply_config_this = reply_config.config.get(str(event.self_id))
+        reply_config_this = reply_config.config[str(event.self_id)]
         for arg in ["on", "off"]:
             if reply_config_this["command_" + arg] == "":
                 raise KeyError
@@ -55,7 +55,7 @@ async def msg_checker_rule(event: GroupMessageEvent, state: T_State) -> bool:
                 reply_config_this["command_" + arg] + "$", event.get_plaintext()
             ):
                 state["blocker_state"] = "reply_" + arg
-    except (AttributeError, KeyError):
+    except KeyError:
         if match := re.match(
             "[.。]bot (on|off)(\s+)?(\[at:qq=\d+\])?", event.get_plaintext()
         ):
@@ -81,7 +81,7 @@ blocker = on_message(
 
 @run_preprocessor
 async def blocker_hook(matcher: Matcher, event: GroupMessageEvent):
-    if blockerlist(event.group_id, str(event.self_id), matcher.plugin_name):
+    if await blockerlist(event.group_id, str(event.self_id), matcher.plugin_name):
         logger.info("[Blocker]Your Message is Blocked By Blocker.")
         raise IgnoredException("[Blocker]Matcher Blocked By Blocker")
 

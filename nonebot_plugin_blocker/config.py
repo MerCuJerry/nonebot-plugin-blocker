@@ -32,6 +32,9 @@ class PluginConfigModel(BaseModel):
     WEBUI_PASSWORD: Optional[str] = Field(None, alias="blocker_webui_password")
 
 
+config = get_plugin_config(PluginConfigModel)
+
+
 class ReplyModel(BaseModel):
     type: Literal["text", "image", "record"]
     data: Optional[str]
@@ -53,9 +56,6 @@ class ReplyConfig:
     config: dict
 
     def __init__(self):
-        self.read_config()
-
-    def read_config(self):
         self.config = ConfigModel.model_validate_json(
             REPLY_JSON_PATH.read_text(encoding="u8")
         ).model_dump()
@@ -76,7 +76,7 @@ class BlockerListModel(RootModel):
 
 class BlockerList:
     blocklist: dict
-    blocker_type: dict[str, bool] = {}
+    blocker_type: dict[str, bool]
 
     def __init__(self, reply_config: dict):
         self.blocklist = BlockerListModel.model_validate_json(
@@ -108,7 +108,7 @@ class BlockerList:
         except KeyError:
             self.blocker_type.setdefault(uin, val)
 
-    def __call__(self, gid: int, uin: str, module_name: str) -> bool:
+    async def __call__(self, gid: int, uin: str, module_name: str) -> bool:
         if "nonebot_plugin_blocker" in module_name:
             return False
         return (gid in self.blocklist.get(uin)) ^ self.blocker_type.get(uin, False)
@@ -127,6 +127,3 @@ class BlockerList:
 
     def __del__(self):
         asyncio.get_running_loop().create_task(self.save_blocker())
-
-
-config = get_plugin_config(PluginConfigModel)

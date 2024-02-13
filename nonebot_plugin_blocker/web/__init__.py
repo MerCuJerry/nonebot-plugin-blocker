@@ -53,9 +53,9 @@ async def show_webpage():
 async def __set_config__(uin: str, form: ConfigSingleModel):
     try:
         reply_config.config.update({uin: form.model_dump()})
+        reply_config.save_config()
         from ..__main__ import blockerlist
         blockerlist.change_blocker_type(uin, form.model_dump().get("blocker_list", False))
-        reply_config.save_config()
         return {"result": "success"}
     except:
         return {"result": "failed"}
@@ -81,9 +81,9 @@ async def __get_reply_config__(uin: str):
 async def __delete_reply_config__(uin: str):
     try:
         reply_config.config.pop(uin)
+        reply_config.save_config()
         from ..__main__ import blockerlist
         blockerlist.change_blocker_type(uin)
-        reply_config.save_config()
         return {"result": "success"}
     except:
         return {"result": "failed"}
