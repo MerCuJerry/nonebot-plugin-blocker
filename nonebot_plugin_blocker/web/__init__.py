@@ -6,10 +6,8 @@ from secrets import compare_digest
 from ..config import (
     STATIC_FILE_PATH,
     MAIN_PAGE_PATH,
-    ConfigModel,
     ConfigSingleModel,
-    get_reply_config,
-    save_reply_config,
+    reply_config,
     config,
 )
 
@@ -54,13 +52,10 @@ async def show_webpage():
 @app.post("/submit/{uin}")
 async def __set_config__(uin: str, form: ConfigSingleModel):
     try:
-        config = get_reply_config()
-        this_config = {uin: form.dict()}
-        config.update(this_config)
+        reply_config.config.update({uin: form.model_dump()})
         from ..__main__ import blockerlist
-
-        blockerlist.change_blocker_type(uin, form.dict().get("blocker_list", False))
-        save_reply_config(ConfigModel.parse_obj(config))
+        blockerlist.change_blocker_type(uin, form.model_dump().get("blocker_list", False))
+        reply_config.save_config()
         return {"result": "success"}
     except:
         return {"result": "failed"}
@@ -69,8 +64,7 @@ async def __set_config__(uin: str, form: ConfigSingleModel):
 @app.get("/query_reply_list")
 async def __get_reply_list__():
     try:
-        config = get_reply_config()
-        return {"result": "success", "data": list(config.keys())}
+        return {"result": "success", "data": list(reply_config.config.keys())}
     except:
         return {"result": "failed"}
 
@@ -78,8 +72,7 @@ async def __get_reply_list__():
 @app.get("/query_reply")
 async def __get_reply_config__(uin: str):
     try:
-        config = get_reply_config()
-        return {"result": "success", "data": config.get(uin, "none")}
+        return {"result": "success", "data": reply_config.config.get(uin)}
     except:
         return {"result": "failed"}
 
@@ -87,12 +80,10 @@ async def __get_reply_config__(uin: str):
 @app.get("/delete")
 async def __delete_reply_config__(uin: str):
     try:
-        config = get_reply_config()
-        config.pop(uin)
+        reply_config.config.pop(uin)
         from ..__main__ import blockerlist
-
         blockerlist.change_blocker_type(uin)
-        save_reply_config(ConfigModel.parse_obj(config))
+        reply_config.save_config()
         return {"result": "success"}
     except:
         return {"result": "failed"}
