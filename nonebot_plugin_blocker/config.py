@@ -4,7 +4,21 @@ from typing import Dict, Optional, Set, Literal
 from nonebot import logger, get_plugin_config
 import asyncio
 
-DATA_PATH = Path.cwd() / "data" / "blocker"
+
+class PluginConfigModel(BaseModel):
+    WEBUI_USERNAME: Optional[str] = Field(None, alias="blocker_webui_username")
+    WEBUI_PASSWORD: Optional[str] = Field(None, alias="blocker_webui_password")
+    data_path: Optional[str] = Field(None, alias="blocker_data_path")
+
+
+config = get_plugin_config(PluginConfigModel)
+
+
+DATA_PATH = (
+    Path.cwd() / "data" / "blocker"
+    if config.data_path is None
+    else Path(config.data_path)
+)
 if not DATA_PATH.exists():
     DATA_PATH.mkdir(parents=True)
 
@@ -25,14 +39,6 @@ reply_config_raw = {
     "reply_on": {"type": "text", "data": "在本群开启"},
     "reply_off": {"type": "text", "data": "在本群关闭"},
 }
-
-
-class PluginConfigModel(BaseModel):
-    WEBUI_USERNAME: Optional[str] = Field(None, alias="blocker_webui_username")
-    WEBUI_PASSWORD: Optional[str] = Field(None, alias="blocker_webui_password")
-
-
-config = get_plugin_config(PluginConfigModel)
 
 
 class ReplyModel(BaseModel):

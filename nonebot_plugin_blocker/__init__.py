@@ -2,7 +2,7 @@ from nonebot.plugin import PluginMetadata
 
 from .__main__ import *
 
-__version__ = "0.4.1"
+__version__ = "0.4.2"
 __plugin_meta__ = PluginMetadata(
     name="Blocker",
     description="分群配置关闭Bot插件",
