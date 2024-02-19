@@ -9,7 +9,7 @@ except:
 
 def get_project_name() -> str:
     with open("pyproject.toml", "r") as f:
-        return load(f.read()).get("project", {}).get("name", "noneplugin")
+        return load(f.read()).get("project", {}).get("name", "noneplugin").replace("-","_")
     
 def run_plugin_test(name: str) -> None:
     init(driver="~none")
