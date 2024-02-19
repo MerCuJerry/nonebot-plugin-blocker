@@ -82,7 +82,7 @@ class BlockerListModel(RootModel):
 
 class BlockerList:
     blocklist: dict
-    blocker_type: dict[str, bool]
+    blocker_type: dict
 
     def __init__(self, reply_config: dict):
         self.blocklist = BlockerListModel.model_validate_json(
