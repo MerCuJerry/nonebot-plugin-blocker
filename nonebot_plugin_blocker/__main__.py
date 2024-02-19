@@ -57,7 +57,7 @@ async def msg_checker_rule(event: GroupMessageEvent, state: T_State) -> bool:
                 state["blocker_state"] = "reply_" + arg
     except KeyError:
         if match := re.match(
-            "[.。]bot (on|off)(\s+)?(\[at:qq=\d+\])?", event.get_plaintext()
+            r"[.。]bot (on|off)(\s+)?(\[at:qq=\d+\])?", event.get_plaintext()
         ):
             state["blocker_state"] = "reply_" + match.group(1)
     if "blocker_state" in state:
