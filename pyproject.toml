@@ -1,14 +1,13 @@
 [project]
 name = "nonebot-plugin-blocker"
-version = "0.4.4"
+version = "0.4.4.post1"
 description = "Message Blocker"
 authors = [{ name = "MerCuJerry", email = "mercujerry@gmail.com" }]
 keywords = ["nonebot", "nonebot2", "qqbot", "bot"]
 dependencies = [
-    "nonebot2 >= 2.2.1",
+    "nonebot2[fastapi] >= 2.2.1",
     "nonebot-adapter-onebot >= 2.4.1",
-    "pydantic >= 2.6.1",
-    "fastapi >= 0.109.0"
+    "pydantic >=1.10.0,<3.0.0,!=2.5.0,!=2.5.1",
 ]
 requires-python = ">=3.8,<4.0"
 readme = "README.md"
