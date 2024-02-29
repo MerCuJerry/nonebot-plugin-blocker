@@ -12,19 +12,15 @@ from nonebot.typing import T_State
 from nonebot.message import run_preprocessor
 from nonebot.exception import IgnoredException
 import re
-from .config import BlockerList, reply_config_raw, reply_config
+from .config import blockerlist, reply_config_raw, reply_config
 from fastapi import FastAPI
 from . import web
 
 driver = get_driver()
 
-blockerlist: BlockerList
-
 
 @driver.on_startup
 async def load_blocker_on_start():
-    global blockerlist
-    blockerlist = BlockerList(reply_config.config)
     if isinstance(driver, ReverseDriver) and isinstance(driver.server_app, FastAPI):
         driver.server_app.mount("/blocker-webui", web.app, name="blocker-webui")
         logger.info(
@@ -33,12 +29,6 @@ async def load_blocker_on_start():
         )
     else:
         logger.info("[Blocker]WebUI only support FastAPI reverse driver.")
-
-
-@driver.on_shutdown
-async def save_blocker_on_shut():
-    global blockerlist
-    del blockerlist
 
 
 async def msg_checker_rule(event: GroupMessageEvent, state: T_State) -> bool:
@@ -98,7 +88,11 @@ async def blocker_msg_handle(
     else:
         blockerlist.add_blocker(event.group_id, str(event.self_id))
     await blockerlist.save_blocker()
-    if msg_type == "text":
-        await matcher.finish(msg_data)
-    else:
-        await matcher.finish(MessageSegment(type=msg_type, data={"file": msg_data}))
+    match msg_type:
+        case "text":
+            msg = MessageSegment.text(msg_data)
+        case "image":
+            msg = MessageSegment.image(msg_data)
+        case "record":
+            msg = MessageSegment.record(msg_data)
+    await matcher.finish(msg)

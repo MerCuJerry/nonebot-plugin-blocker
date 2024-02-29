@@ -9,6 +9,7 @@ from ..config import (
     ConfigSingleModel,
     reply_config,
     config,
+    blockerlist,
 )
 
 
@@ -32,7 +33,9 @@ app = FastAPI(
     title="Blocker插件WebUI",
     description="Blocker plugin`s webui",
     dependencies=(
-        [Depends(security_dependency)] if config.WEBUI_USERNAME and config.WEBUI_PASSWORD else []
+        [Depends(security_dependency)]
+        if config.WEBUI_USERNAME and config.WEBUI_PASSWORD
+        else []
     ),
     version=("nonebot-plugin-blocker"),
 )
@@ -54,10 +57,11 @@ async def __set_config__(uin: str, form: ConfigSingleModel):
     try:
         reply_config.config.update({uin: form.model_dump()})
         reply_config.save_config()
-        from ..__main__ import blockerlist
-        blockerlist.change_blocker_type(uin, form.model_dump().get("blocker_list", False))
+        blockerlist.change_blocker_type(
+            uin, form.model_dump().get("blocker_list", False)
+        )
         return {"result": "success"}
-    except:
+    except:  # noqa: E722
         return {"result": "failed"}
 
 
@@ -65,7 +69,7 @@ async def __set_config__(uin: str, form: ConfigSingleModel):
 async def __get_reply_list__():
     try:
         return {"result": "success", "data": list(reply_config.config.keys())}
-    except:
+    except:  # noqa: E722
         return {"result": "failed"}
 
 
@@ -73,7 +77,7 @@ async def __get_reply_list__():
 async def __get_reply_config__(uin: str):
     try:
         return {"result": "success", "data": reply_config.config.get(uin)}
-    except:
+    except:  # noqa: E722
         return {"result": "failed"}
 
 
@@ -82,8 +86,7 @@ async def __delete_reply_config__(uin: str):
     try:
         reply_config.config.pop(uin)
         reply_config.save_config()
-        from ..__main__ import blockerlist
         blockerlist.change_blocker_type(uin)
         return {"result": "success"}
-    except:
+    except:  # noqa: E722
         return {"result": "failed"}

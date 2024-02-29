@@ -2,27 +2,23 @@ from pydantic import BaseModel, Field, RootModel
 from pathlib import Path
 from typing import Dict, Optional, Set, Literal
 from nonebot import logger, get_plugin_config
-import asyncio
+
+DEFAULT_DATA_PATH = Path.cwd() / "data" / "blocker"
 
 
 class PluginConfigModel(BaseModel):
     WEBUI_USERNAME: Optional[str] = Field(None, alias="blocker_webui_username")
     WEBUI_PASSWORD: Optional[str] = Field(None, alias="blocker_webui_password")
-    data_path: Optional[str] = Field(None, alias="blocker_data_path")
+    DATA_PATH: Path = Field(DEFAULT_DATA_PATH, alias="blocker_data_path")
 
 
 config = get_plugin_config(PluginConfigModel)
 
 
-DATA_PATH = (
-    Path.cwd() / "data" / "blocker"
-    if config.data_path is None
-    else Path(config.data_path)
-)
-if not DATA_PATH.exists():
-    DATA_PATH.mkdir(parents=True)
+if not config.DATA_PATH.exists():
+    config.DATA_PATH.mkdir(parents=True)
 
-BLOCKLIST_JSON_PATH = DATA_PATH / "blocklist.json"
+BLOCKLIST_JSON_PATH = config.DATA_PATH / "blocklist.json"
 if not BLOCKLIST_JSON_PATH.exists():
     BLOCKLIST_JSON_PATH.write_text("{}", encoding="u8")
 
@@ -30,7 +26,7 @@ STATIC_FILE_PATH = Path(__file__).parent / "web" / "webpage"
 
 MAIN_PAGE_PATH = STATIC_FILE_PATH / "main.html"
 
-REPLY_JSON_PATH = DATA_PATH / "config.json"
+REPLY_JSON_PATH = config.DATA_PATH / "config.json"
 if not REPLY_JSON_PATH.exists():
     REPLY_JSON_PATH.write_text("{}", encoding="u8")
 
@@ -98,15 +94,13 @@ class BlockerList:
         except AttributeError:
             self.blocklist.setdefault(uin, set([gid]))
             logger.info("[Blocker]Add Blocker Successful.")
-        except:
-            logger.info("[Blocker]Add Blocker Failed.")
 
     def del_blocker(self, gid: int, uin: str):
         try:
             self.blocklist.get(uin).remove(gid)
             logger.info("[Blocker]Delete Blocker Successful.")
-        except (AttributeError, KeyError):
-            logger.info("[Blocker]Delete Blocker Failed.")
+        except (KeyError, AttributeError):
+            logger.info("[Blocker]Delete Blocker Successful.")
 
     def change_blocker_type(self, uin: str, val: bool = False):
         try:
@@ -120,16 +114,10 @@ class BlockerList:
         return (gid in self.blocklist.get(uin)) ^ self.blocker_type.get(uin, False)
 
     async def save_blocker(self):
-        try:
-            BLOCKLIST_JSON_PATH.write_text(
-                BlockerListModel.model_validate(self.blocklist).model_dump_json(
-                    indent=4
-                ),
-                encoding="u8",
-            )
-            logger.info("[Blocker]Save Blocker Successful.")
-        except:
-            logger.info("[Blocker]Save Blocker Failed.")
+        BLOCKLIST_JSON_PATH.write_text(
+            BlockerListModel.model_validate(self.blocklist).model_dump_json(indent=4),
+            encoding="u8",
+        )
+        logger.info("[Blocker]Save Blocker Successful.")
 
-    def __del__(self):
-        asyncio.get_running_loop().create_task(self.save_blocker())
+blockerlist = BlockerList(reply_config.config)

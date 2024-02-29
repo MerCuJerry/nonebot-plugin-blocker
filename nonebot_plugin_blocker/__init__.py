@@ -1,8 +1,8 @@
 from nonebot.plugin import PluginMetadata
 
-from .__main__ import *
+from .__main__ import * # noqa
 
-__version__ = "0.4.4"
+__version__ = "0.4.5"
 __plugin_meta__ = PluginMetadata(
     name="Blocker",
     description="分群配置关闭Bot插件",
