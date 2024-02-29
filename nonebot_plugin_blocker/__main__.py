@@ -12,6 +12,7 @@ from nonebot.typing import T_State
 from nonebot.message import run_preprocessor
 from nonebot.exception import IgnoredException
 import re
+from pathlib import Path
 from .config import blockerlist, reply_config_raw, reply_config
 from fastapi import FastAPI
 from . import web
@@ -91,7 +92,7 @@ async def blocker_msg_handle(
     if msg_type == "text": # PEP 634 :(
         msg = MessageSegment.text(msg_data)
     elif msg_type == "image":
-        msg = MessageSegment.image(msg_data)
+        msg = MessageSegment.image(Path(msg_data).read_bytes())
     elif msg_type == "record":
-        msg = MessageSegment.record(msg_data)
+        msg = MessageSegment.record(Path(msg_data).read_bytes())
     await matcher.finish(msg)
