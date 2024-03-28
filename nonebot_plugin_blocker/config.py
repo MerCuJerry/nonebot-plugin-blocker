@@ -62,7 +62,8 @@ class ReplyConfig:
             REPLY_JSON_PATH.read_text(encoding="u8")
         ).model_dump()
 
-    def save_config(self):
+    @classmethod
+    async def save_config(self):
         REPLY_JSON_PATH.write_text(
             ConfigModel.model_validate(self.config).model_dump_json(indent=4),
             encoding="u8",
@@ -88,31 +89,36 @@ class BlockerList:
             uin: var.get("blocker_type", False) for uin, var in reply_config.items()
         }
 
-    def add_blocker(self, gid: int, uin: str):
+    async def __call__(self, gid: int, uin: str, module_name: str) -> bool:
+        if "nonebot_plugin_blocker" in module_name:
+            return False
+        return (gid in self.blocklist.get(uin)) ^ self.blocker_type.get(uin, False)
+
+    @classmethod
+    async def add_blocker(self, gid: int, uin: str):
         try:
             self.blocklist.get(uin).add(gid)
+            logger.info("[Blocker]Add Blocker Successful.")
         except AttributeError:
             self.blocklist.setdefault(uin, set([gid]))
             logger.info("[Blocker]Add Blocker Successful.")
 
-    def del_blocker(self, gid: int, uin: str):
+    @classmethod
+    async def del_blocker(self, gid: int, uin: str):
         try:
             self.blocklist.get(uin).remove(gid)
             logger.info("[Blocker]Delete Blocker Successful.")
         except (KeyError, AttributeError):
             logger.info("[Blocker]Delete Blocker Successful.")
 
-    def change_blocker_type(self, uin: str, val: bool = False):
+    @classmethod
+    async def change_blocker_type(self, uin: str, val: bool = False):
         try:
             self.blocker_type[uin] = val
         except KeyError:
             self.blocker_type.setdefault(uin, val)
-
-    async def __call__(self, gid: int, uin: str, module_name: str) -> bool:
-        if "nonebot_plugin_blocker" in module_name:
-            return False
-        return (gid in self.blocklist.get(uin)) ^ self.blocker_type.get(uin, False)
-
+            
+    @classmethod
     async def save_blocker(self):
         BLOCKLIST_JSON_PATH.write_text(
             BlockerListModel.model_validate(self.blocklist).model_dump_json(indent=4),

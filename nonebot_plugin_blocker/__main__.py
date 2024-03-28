@@ -85,9 +85,9 @@ async def blocker_msg_handle(
     msg_type = state["this_reply"].get("type")
     msg_data = state["this_reply"].get("data")
     if (state["blocker_state"] == "reply_on") ^ state["blocker_type"]:
-        blockerlist.del_blocker(event.group_id, str(event.self_id))
+        await blockerlist.del_blocker(event.group_id, str(event.self_id))
     else:
-        blockerlist.add_blocker(event.group_id, str(event.self_id))
+        await blockerlist.add_blocker(event.group_id, str(event.self_id))
     await blockerlist.save_blocker()
     if msg_type == "text": # PEP 634 :(
         msg = MessageSegment.text(msg_data)

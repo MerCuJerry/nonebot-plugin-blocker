@@ -72,6 +72,7 @@ $(document).ready(function(){
             });
         }
     });
+    /*
     $(".add").click(function(){
         $(".active").removeClass("active");
         if(!$(this).parent().children("span").hasClass("inputbox")){
@@ -110,7 +111,7 @@ $(document).ready(function(){
         }else{
             $(".botid_input").focus();
         }
-    });
+    });*/
     $(".delete").click(function(){
         if($(".active").text() == ""){
             alert("您还没有选择或添加账号");

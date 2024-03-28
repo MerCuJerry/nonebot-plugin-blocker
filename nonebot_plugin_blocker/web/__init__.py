@@ -3,6 +3,7 @@ from fastapi.security import HTTPBasicCredentials, HTTPBasic
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from secrets import compare_digest
+from nonebot import get_bots
 from ..config import (
     STATIC_FILE_PATH,
     MAIN_PAGE_PATH,
@@ -56,8 +57,8 @@ async def show_webpage():
 async def __set_config__(uin: str, form: ConfigSingleModel):
     try:
         reply_config.config.update({uin: form.model_dump()})
-        reply_config.save_config()
-        blockerlist.change_blocker_type(
+        await reply_config.save_config()
+        await blockerlist.change_blocker_type(
             uin, form.model_dump().get("blocker_list", False)
         )
         return {"result": "success"}
@@ -68,7 +69,9 @@ async def __set_config__(uin: str, form: ConfigSingleModel):
 @app.get("/query_reply_list")
 async def __get_reply_list__():
     try:
-        return {"result": "success", "data": list(reply_config.config.keys())}
+        bot_list : set = set(get_bots().keys())
+        bot_list.update(reply_config.config.keys())
+        return {"result": "success", "data": list(bot_list)}
     except:  # noqa: E722
         return {"result": "failed"}
 
@@ -85,8 +88,8 @@ async def __get_reply_config__(uin: str):
 async def __delete_reply_config__(uin: str):
     try:
         reply_config.config.pop(uin)
-        reply_config.save_config()
-        blockerlist.change_blocker_type(uin)
+        await reply_config.save_config()
+        await blockerlist.change_blocker_type(uin)
         return {"result": "success"}
     except:  # noqa: E722
         return {"result": "failed"}
