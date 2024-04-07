@@ -62,7 +62,6 @@ class ReplyConfig:
             REPLY_JSON_PATH.read_text(encoding="u8")
         ).model_dump()
 
-    @classmethod
     async def save_config(self):
         REPLY_JSON_PATH.write_text(
             ConfigModel.model_validate(self.config).model_dump_json(indent=4),
@@ -94,7 +93,6 @@ class BlockerList:
             return False
         return (gid in self.blocklist.get(uin)) ^ self.blocker_type.get(uin, False)
 
-    @classmethod
     async def add_blocker(self, gid: int, uin: str):
         try:
             self.blocklist.get(uin).add(gid)
@@ -103,7 +101,6 @@ class BlockerList:
             self.blocklist.setdefault(uin, set([gid]))
             logger.info("[Blocker]Add Blocker Successful.")
 
-    @classmethod
     async def del_blocker(self, gid: int, uin: str):
         try:
             self.blocklist.get(uin).remove(gid)
@@ -111,14 +108,12 @@ class BlockerList:
         except (KeyError, AttributeError):
             logger.info("[Blocker]Delete Blocker Successful.")
 
-    @classmethod
     async def change_blocker_type(self, uin: str, val: bool = False):
         try:
             self.blocker_type[uin] = val
         except KeyError:
             self.blocker_type.setdefault(uin, val)
             
-    @classmethod
     async def save_blocker(self):
         BLOCKLIST_JSON_PATH.write_text(
             BlockerListModel.model_validate(self.blocklist).model_dump_json(indent=4),
