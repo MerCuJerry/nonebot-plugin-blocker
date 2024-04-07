@@ -72,46 +72,6 @@ $(document).ready(function(){
             });
         }
     });
-    /*
-    $(".add").click(function(){
-        $(".active").removeClass("active");
-        if(!$(this).parent().children("span").hasClass("inputbox")){
-            $("nav").append($("<span></span>").addClass("inputbox")
-            .append($("<input>").attr("type","text")
-            .attr("onkeyup","value=value.replace(/[^\\d]/g,'').replace(/^0{1,}/g,'')")
-            .addClass("botid_input")));
-            $(".botid_input").focus();
-            $(".botid_input").bind("keydown blur",function(key){
-                if(key.which==13||key.which==0){
-                    if($(this).val()==""){
-                        alert("请填写需要配置的账号")
-                        $(this).blur().end()
-                    }else{
-                        var mark=false
-                        var input_text=$(".botid_input").val()
-                        $(".botid").each(function(){
-                            if($(this).text()==input_text){
-                                mark=true
-                            }
-                        });
-                        if(mark){
-                            alert("已经存在相同的账号")
-                            $(this).blur().end()
-                        }else{
-                            $("nav").append($("<li></li>").addClass("botid").addClass("newadd").addClass("active").text(input_text));
-                            $(this).parent().remove();
-                            $(".newadd").click(function(){
-                                $(".active").removeClass("active");
-                                $(this).addClass("active");
-                            });
-                        }
-                    }
-                }
-            });
-        }else{
-            $(".botid_input").focus();
-        }
-    });*/
     $(".delete").click(function(){
         if($(".active").text() == ""){
             alert("您还没有选择或添加账号");

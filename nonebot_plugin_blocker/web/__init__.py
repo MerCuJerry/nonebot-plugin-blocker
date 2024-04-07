@@ -62,7 +62,7 @@ async def __set_config__(uin: str, form: ConfigSingleModel):
             uin, form.model_dump().get("blocker_list", False)
         )
         return {"result": "success"}
-    except:  # noqa: E722
+    except Exception:
         return {"result": "failed"}
 
 
@@ -72,7 +72,7 @@ async def __get_reply_list__():
         bot_list : set = set(get_bots().keys())
         bot_list.update(reply_config.config.keys())
         return {"result": "success", "data": list(bot_list)}
-    except:  # noqa: E722
+    except Exception:
         return {"result": "failed"}
 
 
@@ -80,7 +80,7 @@ async def __get_reply_list__():
 async def __get_reply_config__(uin: str):
     try:
         return {"result": "success", "data": reply_config.config.get(uin)}
-    except:  # noqa: E722
+    except Exception:
         return {"result": "failed"}
 
 
@@ -91,5 +91,5 @@ async def __delete_reply_config__(uin: str):
         await reply_config.save_config()
         await blockerlist.change_blocker_type(uin)
         return {"result": "success"}
-    except:  # noqa: E722
+    except Exception:
         return {"result": "failed"}
