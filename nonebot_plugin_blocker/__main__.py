@@ -89,10 +89,11 @@ async def blocker_msg_handle(
     else:
         await blockerlist.add_blocker(event.group_id, str(event.self_id))
     await blockerlist.save_blocker()
-    if msg_type == "text": # PEP 634 :(
-        msg = MessageSegment.text(msg_data)
-    elif msg_type == "image":
-        msg = MessageSegment.image(Path(msg_data).read_bytes())
-    elif msg_type == "record":
-        msg = MessageSegment.record(Path(msg_data).read_bytes())
+    match msg_type: # PEP 634 :)
+        case "text" :
+            msg = MessageSegment.text(msg_data)
+        case "image":
+            msg = MessageSegment.image(Path(msg_data).read_bytes())
+        case "record":
+            msg = MessageSegment.record(Path(msg_data).read_bytes())
     await matcher.finish(msg)
