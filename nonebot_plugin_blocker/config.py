@@ -22,7 +22,7 @@ config = get_plugin_config(PluginConfigModel)
 if config.OLD_DATA_PATH.exists():
     for file in config.OLD_DATA_PATH.iterdir():
         if file.is_file():
-            file.move(CONFIG_PATH / file.name)
+            file.rename(CONFIG_PATH / file.name)
 
 BLOCKLIST_JSON_PATH = store.get_plugin_config_file("blocklist.json")
 if not BLOCKLIST_JSON_PATH.exists():
