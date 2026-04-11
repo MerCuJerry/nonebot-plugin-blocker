@@ -12,9 +12,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - uses: pdm-project/setup-pdm@v4
+    - name: Install the latest version of uv
+      uses: astral-sh/setup-uv@v7
       with:
-        python-version: 3.13
-        cache: true
-    - name: Publish distribution to PyPI with PDM
-      run: pdm publish -u "__token__" -P ${{ secrets.PYPI_API_TOKEN }}
+        enable-cache: true
+        python-version: "3.12"
+        version: 'latest'
+    - name: Build Package
+      run: uv build
+    - name: Publish distribution to PyPI with uv
+      run: uv publish --token ${{ secrets.PYPI_API_TOKEN }}

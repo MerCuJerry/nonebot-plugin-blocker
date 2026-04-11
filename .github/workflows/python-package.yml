@@ -1,13 +1,13 @@
 # This workflow will install Python dependencies, run tests and lint with a variety of Python versions
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
 
-name: Python package
+name: Package test
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "master" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "master" ]
 
 jobs:
   build:
@@ -20,15 +20,16 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: Set up Python ${{ matrix.python-version }} with pdm
-      uses: pdm-project/setup-pdm@v4
+    - name: Set up Python ${{ matrix.python-version }} with uv
+      uses: astral-sh/setup-uv@v7
       with:
+        enable-cache: true
         python-version: ${{ matrix.python-version }}
-        cache: true
+        version: 'latest'
     - name: Sync lock package 
       run: |
-        pdm sync
-        pdm add tomlkit
+        uv sync
+        uv add tomlkit
     - name: Running plugin
       run: |
-        pdm run test.py
+        uv run test.py
