@@ -1,71 +1,94 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-    <title>Blocker插件配置页面</title>
+<head>
     <meta charset="utf-8">
-    <script type="text/javascript" src="http://cdn.bootcss.com/jquery/3.7.0/jquery.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="static/style.css">
-    <script type="text/javascript" src="static/main.js"></script>
-    <body>
-        <header>
-            <span>Blocker-WebUI</span>
-        </header>
-        <div class="sidebar column">
-            <div class="row">
-                <nav>
-                    <div>账号选择</div>
-                </nav>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Blocker 插件配置</title>
+    <link rel="stylesheet" href="static/style.css">
+    <script type="module" src="static/main.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Blocker Web UI</h1>
+    </header>
+
+    <div class="app">
+        <aside class="sidebar" aria-label="账号列表">
+            <div class="sidebar-header">
+                <span>账号选择</span>
+                <button id="add-account" aria-label="添加账号">＋</button>
             </div>
-        </div>
-        <div class="mainpage column" >
-            <div class="row">
-                <form class="blocker_type">
-                    <div class="reply_type">
-                        <span>名单类型：</span>
-                        <select class="blocker_type_select" name="blocker_type" >
-                            <option value="false" selected>黑名单</option>
+            <ul id="accounts" role="list"></ul>
+        </aside>
+
+        <main class="mainpage" role="main">
+            <form id="config-form" class="config" autocomplete="off">
+                <section class="row">
+                    <label>名单类型
+                        <select name="blocker_type" id="blocker_type">
+                            <option value="false">黑名单</option>
                             <option value="true">白名单</option>
                         </select>
-                </form>
-                <form class="command">
-                    <div class="command_on input_box">
-                        <span>开启命令：</span>
-                        <input type="text" name="command_on">
-                    </div>
-                    <div class="command_off input_box">
-                        <span>关闭命令：</span>
-                        <input type="text" name="command_off">
-                    </div>
-                </form>
-                <form name="reply_on" class="reply_on">
-                    <div class="reply_type">
-                        <span>开启回复类型：</span>
-                        <select class="reply_type_select" name="type">
-                            <option value="text" selected>文本</option>
-                            <option value="image">图片</option>
-                            <option value="record">音频</option>
-                        </select>
-                    </div>
-                    <div class="input_box">
-                        <span>开启回复：</span>
-                        <input type="text" name="data">
-                    </div>
-                </form>
-                <form name="reply_off" class="reply_off">
-                    <div class="reply_type">
-                        <span>关闭回复类型：</span>
-                        <select class="reply_type_select" name="type" >
-                            <option value="text" selected>文本</option>
-                            <option value="image">图片</option>
-                            <option value="record">音频</option>
-                        </select>
-                    <div class="input_box">
-                        <span>关闭回复：</span>
-                        <input type="text" name="data">
-                    </div>
-                </form>
-                <input type="button" value="确认" class="submit">
-                <input type="button" value="删除该配置" class="delete">
-            </div>
+                    </label>
+                </section>
+
+                <section class="row two-cols">
+                    <label>开启命令
+                        <input type="text" name="command_on" placeholder="例如: /block on">
+                    </label>
+                    <label>关闭命令
+                        <input type="text" name="command_off" placeholder="例如: /block off">
+                    </label>
+                </section>
+
+                <section class="row two-cols">
+                    <fieldset class="reply-field">
+                        <legend>开启回复</legend>
+                        <label>类型
+                            <select name="reply_on_type">
+                                <option value="text">文本</option>
+                                <option value="image">图片</option>
+                                <option value="record">音频</option>
+                            </select>
+                        </label>
+                        <label>内容
+                            <input type="text" name="reply_on_data" placeholder="回复内容或资源 URL">
+                        </label>
+                    </fieldset>
+
+                    <fieldset class="reply-field">
+                        <legend>关闭回复</legend>
+                        <label>类型
+                            <select name="reply_off_type">
+                                <option value="text">文本</option>
+                                <option value="image">图片</option>
+                                <option value="record">音频</option>
+                            </select>
+                        </label>
+                        <label>内容
+                            <input type="text" name="reply_off_data" placeholder="回复内容或资源 URL">
+                        </label>
+                    </fieldset>
+                </section>
+
+                <div class="actions">
+                    <button type="button" id="submit-btn">保存</button>
+                    <button type="button" id="delete-btn" class="destructive">删除该配置</button>
+                </div>
+            </form>
+        </main>
+    </div>
+</body>
+</html>
+
+<!-- Toast / Modal -->
+<div id="toast" class="toast hidden" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="toast-content" role="document">
+        <p id="toast-message"></p>
+        <div class="toast-actions">
+            <button id="toast-ok">确定</button>
         </div>
-    </body>
+    </div>
+</div>
+
 </html>
