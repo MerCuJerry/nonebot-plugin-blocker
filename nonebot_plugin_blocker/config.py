@@ -1,24 +1,30 @@
 from pydantic import BaseModel, Field, RootModel
 from pathlib import Path
 from typing import Dict, Optional, Set, Literal
-from nonebot import logger, get_plugin_config
+from nonebot import logger, get_plugin_config, require
+require("nonebot_plugin_localstore")
+import nonebot_plugin_localstore as store
 
-DEFAULT_DATA_PATH = Path.cwd() / "data" / "blocker"
+OLD_DATA_PATH = Path.cwd() / "data" / "blocker"
 
+plugin_config_dir: Path = store.get_plugin_config_dir()
+CONFIG_PATH = plugin_config_dir
 
 class PluginConfigModel(BaseModel):
     WEBUI_USERNAME: Optional[str] = Field(None, alias="blocker_webui_username")
     WEBUI_PASSWORD: Optional[str] = Field(None, alias="blocker_webui_password")
-    DATA_PATH: Path = Field(DEFAULT_DATA_PATH, alias="blocker_data_path")
+    OLD_DATA_PATH: Path = Field(OLD_DATA_PATH, alias="blocker_data_path")
 
 
 config = get_plugin_config(PluginConfigModel)
 
 
-if not config.DATA_PATH.exists():
-    config.DATA_PATH.mkdir(parents=True)
+if config.OLD_DATA_PATH.exists():
+    for file in config.OLD_DATA_PATH.iterdir():
+        if file.is_file():
+            file.move(CONFIG_PATH / file.name)
 
-BLOCKLIST_JSON_PATH = config.DATA_PATH / "blocklist.json"
+BLOCKLIST_JSON_PATH = store.get_plugin_config_file("blocklist.json")
 if not BLOCKLIST_JSON_PATH.exists():
     BLOCKLIST_JSON_PATH.write_text("{}", encoding="u8")
 
@@ -26,7 +32,7 @@ STATIC_FILE_PATH = Path(__file__).parent / "web" / "webpage"
 
 MAIN_PAGE_PATH = STATIC_FILE_PATH / "main.html"
 
-REPLY_JSON_PATH = config.DATA_PATH / "config.json"
+REPLY_JSON_PATH = store.get_plugin_config_file("config.json")
 if not REPLY_JSON_PATH.exists():
     REPLY_JSON_PATH.write_text("{}", encoding="u8")
 

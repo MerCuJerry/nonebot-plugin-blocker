@@ -54,15 +54,15 @@ _✨ NoneBot Plugin Blocker ✨_
 #WebUI的登录凭证，不设置即不进行验证
 BLOCKER_WEBUI_USERNAME=""
 BLOCKER_WEBUI_PASSWORD=""
-#Blocker插件的配置存放位置，留空则为默认./data/blocker
+# 已弃用，使用nonebot_plugin_localstore存储
 blocker_data_path=""
 ```
 
 ### 其他配置项
 
-插件的回复配置文件位于 `data/blocker/config.json` 里，不建议手动更改
+插件的回复配置文件位于 `{LOCALSTORE_DATA_DIR}/nonebot_plugin_blocker/config.json` 里，不建议手动更改
 
-`data/blocker/blocklist.json` 里是已经加入名单的群号，可以在关闭nonebot之后手动编辑
+`{LOCALSTORE_DATA_DIR}/nonebot_plugin_blocker/blocklist.json` 里是已经加入名单的群号，可以在关闭nonebot之后手动编辑
 
 ## 💬 指令
 
