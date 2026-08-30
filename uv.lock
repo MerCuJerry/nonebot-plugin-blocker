@@ -325,15 +325,13 @@ version = "0.5.0"
 source = { editable = "." }
 dependencies = [
     { name = "fastapi" },
+    { name = "nonebot-adapter-milky" },
     { name = "nonebot-plugin-localstore" },
     { name = "nonebot2" },
     { name = "pydantic" },
 ]
 
 [package.optional-dependencies]
-milky = [
-    { name = "nonebot-adapter-milky" },
-]
 onebot = [
     { name = "nonebot-adapter-onebot" },
 ]
@@ -341,13 +339,13 @@ onebot = [
 [package.metadata]
 requires-dist = [
     { name = "fastapi", specifier = ">=0.141.1" },
-    { name = "nonebot-adapter-milky", marker = "extra == 'milky'", specifier = ">=1.2.0" },
+    { name = "nonebot-adapter-milky", specifier = ">=1.2.0" },
     { name = "nonebot-adapter-onebot", marker = "extra == 'onebot'", specifier = ">=2.4.6" },
     { name = "nonebot-plugin-localstore", specifier = ">=0.7.4" },
     { name = "nonebot2", specifier = ">=2.5.0" },
     { name = "pydantic", specifier = ">=2.0,<3.0.0" },
 ]
-provides-extras = ["onebot", "milky"]
+provides-extras = ["onebot"]
 
 [[package]]
 name = "nonebot-plugin-localstore"
