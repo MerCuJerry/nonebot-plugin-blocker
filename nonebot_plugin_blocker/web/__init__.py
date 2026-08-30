@@ -1,16 +1,18 @@
-from fastapi import FastAPI, HTTPException, Depends
-from fastapi.security import HTTPBasicCredentials, HTTPBasic
-from fastapi.responses import HTMLResponse
-from fastapi.staticfiles import StaticFiles
 from secrets import compare_digest
+
+from fastapi import Depends, FastAPI, HTTPException
+from fastapi.responses import HTMLResponse
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
+from fastapi.staticfiles import StaticFiles
 from nonebot import get_bots
+
 from ..config import (
-    STATIC_FILE_PATH,
     MAIN_PAGE_PATH,
+    STATIC_FILE_PATH,
     ConfigSingleModel,
-    reply_config,
-    config,
     blockerlist,
+    config,
+    reply_config,
 )
 
 

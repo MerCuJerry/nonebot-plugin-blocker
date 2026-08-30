@@ -1,7 +1,9 @@
-from pydantic import BaseModel, Field, RootModel
 from pathlib import Path
-from typing import Dict, Optional, Set, Literal
-from nonebot import logger, get_plugin_config, require
+from typing import Literal
+
+from nonebot import get_plugin_config, logger, require
+from pydantic import BaseModel, Field, RootModel
+
 require("nonebot_plugin_localstore")
 import nonebot_plugin_localstore as store
 
@@ -10,13 +12,13 @@ OLD_DATA_PATH = Path.cwd() / "data" / "blocker"
 plugin_config_dir: Path = store.get_plugin_config_dir()
 CONFIG_PATH = plugin_config_dir
 
-class PluginConfigModel(BaseModel):
-    WEBUI_USERNAME: Optional[str] = Field(None, alias="blocker_webui_username")
-    WEBUI_PASSWORD: Optional[str] = Field(None, alias="blocker_webui_password")
+class BlockerPluginConfigModel(BaseModel):
+    WEBUI_USERNAME: str | None = Field(None, alias="blocker_webui_username")
+    WEBUI_PASSWORD: str | None = Field(None, alias="blocker_webui_password")
     OLD_DATA_PATH: Path = Field(OLD_DATA_PATH, alias="blocker_data_path")
 
 
-config = get_plugin_config(PluginConfigModel)
+config = get_plugin_config(BlockerPluginConfigModel)
 
 
 if config.OLD_DATA_PATH.exists():
@@ -45,19 +47,19 @@ reply_config_raw = {
 
 class ReplyModel(BaseModel):
     type: Literal["text", "image", "record"]
-    data: Optional[str]
+    data: str | None
 
 
 class ConfigSingleModel(BaseModel):
     blocker_type: bool = False  # False 黑名单 True 白名单
-    command_on: Optional[str]
-    command_off: Optional[str]
+    command_on: str | None
+    command_off: str | None
     reply_on: ReplyModel
     reply_off: ReplyModel
 
 
 class ConfigModel(RootModel):
-    root: Dict[str, ConfigSingleModel]
+    root: dict[str, ConfigSingleModel]
 
 
 class ReplyConfig:
@@ -79,7 +81,7 @@ reply_config = ReplyConfig()
 
 
 class BlockerListModel(RootModel):
-    root: Dict[str, Set[int]]
+    root: dict[str, set[int]]
 
 
 class BlockerList:
@@ -104,7 +106,7 @@ class BlockerList:
             self.blocklist.get(uin).add(gid)
             logger.info("[Blocker]Add Blocker Successful.")
         except AttributeError:
-            self.blocklist.setdefault(uin, set([gid]))
+            self.blocklist.setdefault(uin, {gid})
             logger.info("[Blocker]Add Blocker Successful.")
 
     async def del_blocker(self, gid: int, uin: str):
